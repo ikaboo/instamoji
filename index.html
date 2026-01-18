@@ -29,13 +29,15 @@
             user-select: none;
         }
 
-        /* Top Bar Container */
+        /* --- LAYOUT CONTAINERS --- */
+        
+        /* 1. Top Section (Logo & Stars) */
         .top-container {
-            position: fixed;
-            top: 3vh;
+            position: absolute;
+            top: 5vh;
             width: 100%;
             text-align: center;
-            z-index: 100;
+            z-index: 10;
         }
 
         .header-logo {
@@ -47,28 +49,31 @@
             letter-spacing: 2px;
         }
 
-        /* Doubled Star Size */
         .status-bar {
-            height: 60px;
-            font-size: 3.5rem; /* 2x Bigger */
+            height: 50px;
+            font-size: 3rem;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 10px;
         }
 
-        /* Perfect Screen Centering */
+        /* 2. Main Screen Layout */
         .screen { 
             display: none; 
             height: 100vh; 
             width: 100vw; 
             flex-direction: column; 
             align-items: center; 
-            justify-content: center; /* Centered object */
         }
         .active { display: flex; }
 
-        /* Menu Grid */
+        /* Menu Specific */
+        #menu-screen {
+            justify-content: center;
+            padding-top: 10vh;
+        }
+
         .menu-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -89,77 +94,87 @@
             color: var(--text-dark);
             text-transform: uppercase;
         }
-        .cat-card span { font-size: 2.2rem; display: block; margin-bottom: 5px; }
+        .cat-card span { font-size: 2.5rem; display: block; margin-bottom: 5px; }
         .random-btn { grid-column: span 2; background: #A855F7; color: white; box-shadow: 0 6px 0 #7e3af2; }
 
-        /* Game Card Center */
+        /* --- GAME ROW (Perfect Alignment) --- */
+        .game-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 95%;
+            max-width: 500px;
+            flex-grow: 1; 
+        }
+
+        /* Arrows */
+        .nav-btn {
+            font-size: 3.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            filter: drop-shadow(0 4px 0 rgba(0,0,0,0.2));
+            padding: 0 10px;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+        }
+        
+        .nav-btn:active { transform: scale(0.9); }
+
+        /* The Card */
         #game-viewport {
-            width: 85%;
-            max-width: 360px;
+            flex-grow: 1;
+            margin: 0 10px;
             perspective: 1000px;
         }
 
         #game-card {
             background: white;
-            padding: 40px 20px;
-            border-radius: 50px;
+            padding: 40px 10px;
+            border-radius: 40px;
             text-align: center;
             box-shadow: 0 12px 0 #e6c841;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         #visual-display {
-            font-size: 150px; 
-            height: 180px;
+            font-size: 140px; 
+            height: 160px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.1s ease;
             font-family: var(--helvetica);
             font-weight: bold;
             color: var(--text-dark);
         }
-        #visual-display:active { transform: scale(1.25); }
+        #visual-display:active { transform: scale(1.15); }
 
         h2#description { 
             font-family: var(--helvetica);
-            font-size: 1.8rem; 
+            font-size: 2rem; 
             font-weight: bold;
             color: var(--text-dark); 
             margin: 10px 0 0;
             text-transform: uppercase;
         }
 
-        /* Centered Side Arrows */
-        .side-nav {
-            position: fixed; 
-            top: 50%; 
-            transform: translateY(-50%);
-            height: 100px; 
-            width: 70px;
-            display: flex; 
-            align-items: center; 
+        /* 3. Bottom Section */
+        .bottom-actions {
+            margin-bottom: 5vh;
+            display: flex;
             justify-content: center;
-            font-size: 4rem; 
-            color: rgba(255, 255, 255, 0.6); 
-            z-index: 50;
-            cursor: pointer;
         }
-        .left-arrow { left: 0; } 
-        .right-arrow { right: 0; }
-
-        .bottom-actions { position: fixed; bottom: 4vh; display: flex; gap: 20px; }
         .small-btn {
-            padding: 15px 30px; border: none; border-radius: 20px;
+            padding: 15px 40px; border: none; border-radius: 20px;
             color: white; font-family: 'Bowlby One SC', sans-serif;
             font-size: 1.2rem;
             box-shadow: 0 6px 0 rgba(0,0,0,0.2);
         }
 
-        /* Animation Classes */
-        .slide-out-left { transform: translateX(-160%) rotate(-15deg); opacity: 0; }
-        .slide-out-right { transform: translateX(160%) rotate(15deg); opacity: 0; }
+        /* Animations */
+        .slide-out-left { transform: translateX(-150%) rotate(-10deg); opacity: 0; }
+        .slide-out-right { transform: translateX(150%) rotate(10deg); opacity: 0; }
+
     </style>
 </head>
 <body>
@@ -173,7 +188,7 @@
     <div class="menu-grid">
         <button class="cat-card" onclick="startGame('alphabet')"><span>ABC</span>Alphabet</button>
         <button class="cat-card" onclick="startGame('numbers')"><span>🔢</span>Numbers</button>
-        <button class="cat-card" onclick="startGame('animals')"><span>🦁</span>Animals</button>
+        <button class="cat-card" onclick="startGame('animals')"><span>🐶</span>Animals</button>
         <button class="cat-card" onclick="startGame('vehicles')"><span>🚀</span>Vroom!</button>
         <button class="cat-card" onclick="startGame('feelings')"><span>🥰</span>Feelings</button>
         <button class="cat-card random-btn" onclick="startGame('random')"><span>🎲</span>Random Mix</button>
@@ -181,14 +196,18 @@
 </div>
 
 <div id="game-screen" class="screen">
-    <div class="side-nav left-arrow" onclick="prevCard()">◀</div>
-    <div class="side-nav right-arrow" onclick="nextCard()">▶</div>
-
-    <div id="game-viewport">
-        <div id="game-card">
-            <div id="visual-display" onmousedown="handleInteraction()" ontouchstart="handleInteraction()">A</div>
-            <h2 id="description">A</h2>
+    
+    <div class="game-row">
+        <button class="nav-btn" onclick="prevCard()">◀️</button>
+        
+        <div id="game-viewport">
+            <div id="game-card">
+                <div id="visual-display" onmousedown="handleInteraction()" ontouchstart="handleInteraction()">A</div>
+                <h2 id="description">A</h2>
+            </div>
         </div>
+
+        <button class="nav-btn" onclick="nextCard()">▶️</button>
     </div>
 
     <div class="bottom-actions">
@@ -199,9 +218,11 @@
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // Helvetica Alphabet Data
+    // Alphabet
     const alphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => ({ 
-        emoji: l, text: l, voice: l 
+        emoji: l, 
+        text: l, 
+        voice: l.toLowerCase() 
     }));
 
     const categories = {
@@ -210,7 +231,18 @@
             { emoji: "🦁", text: "Lion", voice: "Lion" },
             { emoji: "🐘", text: "Elephant", voice: "Elephant" },
             { emoji: "🦒", text: "Giraffe", voice: "Giraffe" },
-            { emoji: "🐸", text: "Frog", voice: "Frog" }
+            { emoji: "🐸", text: "Frog", voice: "Frog" },
+            // 10 New Animals
+            { emoji: "🐶", text: "Dog", voice: "Dog" },
+            { emoji: "🐱", text: "Cat", voice: "Cat" },
+            { emoji: "🐵", text: "Monkey", voice: "Monkey" },
+            { emoji: "🐮", text: "Cow", voice: "Cow" },
+            { emoji: "🐷", text: "Pig", voice: "Pig" },
+            { emoji: "🦆", text: "Duck", voice: "Duck" },
+            { emoji: "🐔", text: "Chicken", voice: "Chicken" },
+            { emoji: "🐻", text: "Bear", voice: "Bear" },
+            { emoji: "🐯", text: "Tiger", voice: "Tiger" },
+            { emoji: "🐰", text: "Bunny", voice: "Bunny" }
         ],
         vehicles: [
             { emoji: "🏍️", text: "Motorcycle", voice: "Motorcycle" },
@@ -228,7 +260,18 @@
             { emoji: "❤️", text: "Heart", voice: "Heart" },
             { emoji: "🥳", text: "Party", voice: "Party" },
             { emoji: "😱", text: "Surprise", voice: "Surprise" },
-            { emoji: "😂", text: "Silly", voice: "Silly" }
+            { emoji: "😂", text: "Silly", voice: "Silly" },
+            // 10 New Feelings
+            { emoji: "😊", text: "Happy", voice: "Happy" },
+            { emoji: "😢", text: "Sad", voice: "Sad" },
+            { emoji: "😠", text: "Angry", voice: "Angry" },
+            { emoji: "😴", text: "Sleepy", voice: "Sleepy" },
+            { emoji: "😎", text: "Cool", voice: "Cool" },
+            { emoji: "🤔", text: "Thinking", voice: "Thinking" },
+            { emoji: "😉", text: "Wink", voice: "Wink" },
+            { emoji: "😨", text: "Scared", voice: "Scared" },
+            { emoji: "🤢", text: "Sick", voice: "Sick" },
+            { emoji: "🤩", text: "Star Struck", voice: "Star Struck" }
         ],
         numbers: [
             ...("0123456789".split("").map(n => ({ emoji: n + "️⃣", text: n, voice: n }))),
@@ -288,7 +331,7 @@
                 card.style.transition = 'none';
                 card.style.transform = direction === 'next' ? 'translateX(100%)' : 'translateX(-100%)';
                 setTimeout(() => {
-                    card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s';
+                    card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                     card.style.transform = 'translateX(0)';
                 }, 20);
             }, 300);
@@ -312,25 +355,25 @@
 
     function triggerMilestone() {
         document.getElementById('star-bar').innerHTML += "⭐";
-        // Massive star confetti
         confetti({ 
             particleCount: 120, 
             spread: 80, 
             origin: { y: 0.5 }, 
             shapes: ['star'], 
             colors: ['#FFDE59'],
-            scalar: 2 // 2x bigger confetti stars too
+            scalar: 2 
         });
         
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance("Wow!");
-        msg.pitch = 1.7;
+        msg.pitch = 1.6;
         window.speechSynthesis.speak(msg);
     }
 
     function speakCurrent() {
         window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance(currentGameData[currentIndex].voice);
+        const textToSay = currentGameData[currentIndex].voice;
+        const msg = new SpeechSynthesisUtterance(textToSay);
         msg.pitch = 1.3;
         window.speechSynthesis.speak(msg);
     }
