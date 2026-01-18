@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Instamoji</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Instamoji">
+    <link rel="apple-touch-icon" href="https://emojiapi.dev/api/v1/smiling_face_with_hearts/180.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #5271FF;
+            --secondary: #FF5757;
+            --accent: #A855F7;
+            --bg: #FFDE59;
+            --text-dark: #333;
+        }
+
+        body {
+            margin: 0; padding: 0; font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: var(--bg); overflow: hidden; touch-action: none; user-select: none;
+        }
+
+        .screen { display: none; height: 100vh; width: 100vw; flex-direction: column; align-items: center; justify-content: center; }
+        .active { display: flex; }
+
+        h1.brand { font-size: 4rem; color: white; text-shadow: 4px 4px 0px var(--secondary); margin: 0 0 20px 0; }
+
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 400px; }
+        
+        .cat-card {
+            background: white; padding: 20px; border-radius: 25px; font-size: 1.4rem; border: none;
+            box-shadow: 0 8px 0 #d4b840; cursor: pointer; transition: transform 0.1s;
+        }
+        .cat-card:active { transform: scale(0.95); }
+
+        #game-container { background: white; width: 85%; max-width: 400px; padding: 30px; border-radius: 40px; text-align: center; box-shadow: 0 10px 0 #d4b840; }
+        #visual-display { font-size: 110px; height: 180px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s; }
+        #visual-display img { width: 160px; height: 160px; border-radius: 20px; object-fit: cover; }
+
+        h2#description { font-size: 1.8rem; color: var(--text-dark); margin: 20px 0; min-height: 2.2em; }
+
+        .btn-row { display: flex; gap: 10px; margin-top: 15px; justify-content: center; width: 100%; }
+        button.action-btn { padding: 15px 20px; border: none; border-radius: 20px; color: white; font-size: 1.2rem; font-weight: bold; cursor: pointer; flex: 1; }
+
+        .blue { background: var(--primary); box-shadow: 0 6px 0 #3a52c7; }
+        .red { background: var(--secondary); box-shadow: 0 6px 0 #c44242; }
+        .purple { background: var(--accent); box-shadow: 0 6px 0 #7e3af2; }
+        .gray { background: #94a3b8; box-shadow: 0 6px 0 #64748b; margin-top: 20px; width: 100%;}
+        button:active { transform: translateY(4px); box-shadow: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="menu-screen" class="screen active">
+    <h1 class="brand">Instamoji</h1>
+    <div class="menu-grid">
+        <button class="cat-card" onclick="startGame('animals')">🦒<br>Animals</button>
+        <button class="cat-card" onclick="startGame('cars')">🚜<br>Vroom!</button>
+        <button class="cat-card" onclick="startGame('feelings')">🥰<br>Feelings</button>
+        <button class="cat-card" onclick="startGame('mix')">🎲<br>Mix All</button>
+    </div>
+</div>
+
+<div id="game-screen" class="screen">
+    <div id="game-container">
+        <div id="visual-display" onclick="speakCurrent()">🦁</div>
+        <h2 id="description">Ready?</h2>
+        
+        <div class="btn-row">
+            <button class="action-btn blue" onclick="prevCard()">⬅️</button>
+            <button class="action-btn blue" onclick="nextCard()">➡️</button>
+        </div>
+
+        <div class="btn-row">
+            <button id="mode-btn" class="action-btn red" onclick="toggleGif()">Show GIFs</button>
+            <button class="action-btn purple" onclick="shuffleGame()">🔀 Mix</button>
+        </div>
+
+        <button class="action-btn gray" onclick="goHome()">🏠 Home</button>
+    </div>
+</div>
+
+<script>
+    const categories = {
+        animals: [
+            { emoji: "🦁", text: "Lion says ROAR!", voice: "The Lion says roar", gif: "https://media.giphy.com/media/OAW8YVbMNDRWE/giphy.gif" },
+            { emoji: "🐘", text: "Big Elephant!", voice: "The Elephant says trumpet", gif: "https://media.giphy.com/media/l41lS23nnE9uLpN2U/giphy.gif" },
+            { emoji: "🦒", text: "Tall Giraffe", voice: "Look at the tall giraffe", gif: "https://media.giphy.com/media/Y97pPl9Qf2U3S/giphy.gif" },
+            { emoji: "🐸", text: "Jump Froggy!", voice: "The frog says ribbit", gif: "https://media.giphy.com/media/3o7at0quy0AZpBA7jW/giphy.gif" }
+        ],
+        cars: [
+            { emoji: "🚜", text: "Bumpy Tractor", voice: "The tractor goes chugga chugga chugga", gif: "https://media.giphy.com/media/3o7TKVUn7iM8FMEU24/giphy.gif" },
+            { emoji: "🚒", text: "Fire Truck!", voice: "The fire truck goes wee-woo wee-woo", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHR5ZGRyZzhiaW9qZGR3bm5uNmx4dzY0dm9sZGd6ZzhiaW9qZGR3biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKMGpxx6B837Lpu/giphy.gif" },
+            { emoji: "🏎️", text: "Fast Race Car", voice: "The race car goes vroom vroom", gif: "https://media.giphy.com/media/5xtDarJZ1KuAgU269Xq/giphy.gif" },
+            { emoji: "🚑", text: "Ambulance!", voice: "Bee-doo bee-doo ambulance", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHR5ZGRyZzhiaW9qZGR3bm5uNmx4dzY0dm9sZGd6ZzhiaW9qZGR3biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKVUn7iM8FMEU24/giphy.gif" }
+        ],
+        feelings: [
+            { emoji: "🥰", text: "I feel Loved", voice: "I feel so much love", gif: "https://media.giphy.com/media/3o7TKMGpxx6B837Lpu/giphy.gif" },
+            { emoji: "❤️", text: "Big Heart", voice: "I love you very much", gif: "https://media.giphy.com/media/l41lS23nnE9uLpN2U/giphy.gif" },
+            { emoji: "🥳", text: "Party Time!", voice: "Yay! Let's have a party!", gif: "https://media.giphy.com/media/3o7at0quy0AZpBA7jW/giphy.gif" },
+            { emoji: "😱", text: "Surprise!", voice: "Whoa! I am surprised!", gif: "https://media.giphy.com/media/OAW8YVbMNDRWE/giphy.gif" },
+            { emoji: "😂", text: "So Silly!", voice: "Hahaha! You are so silly!", gif: "https://media.giphy.com/media/3o7TKUslwxqKHzpSPS/giphy.gif" }
+        ]
+    };
+
+    let currentGameData = [];
+    let currentIndex = 0;
+    let isGifMode = false;
+    let touchStartX = 0;
+
+    function startGame(cat) {
+        currentGameData = (cat === 'mix') ? [...categories.animals, ...categories.cars, ...categories.feelings] : [...categories[cat]];
+        if (cat === 'mix') shuffleGame(false);
+        currentIndex = 0;
+        showScreen('game-screen');
+        updateScreen();
+        speakCurrent("Instamoji time!");
+    }
+
+    function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+    function goHome() { showScreen('menu-screen'); }
+
+    function updateScreen() {
+        const item = currentGameData[currentIndex];
+        const display = document.getElementById('visual-display');
+        document.getElementById('description').innerText = item.text;
+        display.style.opacity = 0;
+        setTimeout(() => {
+            display.innerHTML = isGifMode ? `<img src="${item.gif}">` : item.emoji;
+            display.style.opacity = 1;
+        }, 150);
+    }
+
+    function nextCard() { currentIndex = (currentIndex + 1) % currentGameData.length; if (currentIndex === 0) launchReward(); updateScreen(); }
+    function prevCard() { currentIndex = (currentIndex - 1 + currentGameData.length) % currentGameData.length; updateScreen(); }
+    function toggleGif() { isGifMode = !isGifMode; document.getElementById('mode-btn').innerText = isGifMode ? "Show Emoji" : "Show GIFs"; updateScreen(); }
+    function shuffleGame(voice = true) { currentGameData.sort(() => Math.random() - 0.5); currentIndex = 0; updateScreen(); if(voice) speakCurrent("Mix mix mix!"); }
+    
+    function speakCurrent(custom) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(custom || currentGameData[currentIndex].voice);
+        msg.pitch = 1.3; msg.rate = 0.9; window.speechSynthesis.speak(msg);
+    }
+
+    function launchReward() {
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, shapes: ['star'], colors: ['#FFDE59', '#5271FF', '#FF5757'] });
+        speakCurrent("Wow! You finished the set!");
+    }
+
+    document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+    document.addEventListener('touchend', e => {
+        let diff = e.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(diff) > 60) diff > 0 ? prevCard() : nextCard();
+    });
+</script>
+</body>
+</html>
