@@ -17,21 +17,22 @@
             --secondary: #FF5757;
             --bg: #FFDE59;
             --text-dark: #333;
+            --helvetica: "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
 
         body {
             margin: 0; padding: 0;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-family: var(--helvetica);
             background-color: var(--bg);
             overflow: hidden;
             touch-action: none;
             user-select: none;
         }
 
-        /* Top Bar: Logo + Star Status */
+        /* Top Bar Container */
         .top-container {
             position: fixed;
-            top: 5vh; /* Moved 25% higher overall by lifting top elements */
+            top: 3vh;
             width: 100%;
             text-align: center;
             z-index: 100;
@@ -39,30 +40,31 @@
 
         .header-logo {
             font-family: 'Bowlby One SC', sans-serif;
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             color: white;
             text-shadow: 4px 4px 0px var(--secondary);
             margin-bottom: 5px;
             letter-spacing: 2px;
         }
 
+        /* Doubled Star Size */
         .status-bar {
-            height: 40px;
-            font-size: 1.5rem;
+            height: 60px;
+            font-size: 3.5rem; /* 2x Bigger */
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 5px;
+            gap: 10px;
         }
 
+        /* Perfect Screen Centering */
         .screen { 
             display: none; 
             height: 100vh; 
             width: 100vw; 
             flex-direction: column; 
             align-items: center; 
-            justify-content: flex-start; /* Changed from center to lift content */
-            padding-top: 15vh; /* Adjusted for higher placement */
+            justify-content: center; /* Centered object */
         }
         .active { display: flex; }
 
@@ -70,71 +72,92 @@
         .menu-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
+            gap: 15px; 
             width: 85%; 
-            max-width: 400px; 
-            margin-top: 20px; 
+            max-width: 400px;
         }
         
         .cat-card {
             background: white; 
-            padding: 15px 5px; 
+            padding: 20px 5px; 
             border-radius: 20px; 
-            font-size: 1rem; 
+            font-size: 1.1rem; 
             border: none;
             box-shadow: 0 6px 0 #d4b840; 
             cursor: pointer; 
             font-family: 'Bowlby One SC', sans-serif;
             color: var(--text-dark);
+            text-transform: uppercase;
         }
-        .cat-card span { font-size: 1.8rem; display: block; margin-bottom: 2px; }
+        .cat-card span { font-size: 2.2rem; display: block; margin-bottom: 5px; }
         .random-btn { grid-column: span 2; background: #A855F7; color: white; box-shadow: 0 6px 0 #7e3af2; }
 
-        /* Game Viewport */
+        /* Game Card Center */
         #game-viewport {
-            width: 80%;
-            max-width: 350px;
+            width: 85%;
+            max-width: 360px;
             perspective: 1000px;
-            margin-top: 30px;
         }
 
         #game-card {
             background: white;
-            padding: 30px 20px;
-            border-radius: 40px;
+            padding: 40px 20px;
+            border-radius: 50px;
             text-align: center;
-            box-shadow: 0 10px 0 #d4b840;
+            box-shadow: 0 12px 0 #e6c841;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
         }
 
         #visual-display {
-            font-size: 120px;
-            height: 150px;
+            font-size: 150px; 
+            height: 180px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: transform 0.1s ease;
+            font-family: var(--helvetica);
+            font-weight: bold;
+            color: var(--text-dark);
         }
         #visual-display:active { transform: scale(1.25); }
 
-        h2#description { font-size: 1.5rem; color: var(--text-dark); margin: 10px 0 0; min-height: 1.2em; }
+        h2#description { 
+            font-family: var(--helvetica);
+            font-size: 1.8rem; 
+            font-weight: bold;
+            color: var(--text-dark); 
+            margin: 10px 0 0;
+            text-transform: uppercase;
+        }
 
+        /* Centered Side Arrows */
         .side-nav {
-            position: fixed; top: 0; height: 100%; width: 70px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 3.5rem; color: rgba(255, 255, 255, 0.5); z-index: 50;
+            position: fixed; 
+            top: 50%; 
+            transform: translateY(-50%);
+            height: 100px; 
+            width: 70px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-size: 4rem; 
+            color: rgba(255, 255, 255, 0.6); 
+            z-index: 50;
+            cursor: pointer;
         }
-        .left-arrow { left: 0; } .right-arrow { right: 0; }
+        .left-arrow { left: 0; } 
+        .right-arrow { right: 0; }
 
-        .bottom-actions { position: fixed; bottom: 40px; display: flex; gap: 20px; }
+        .bottom-actions { position: fixed; bottom: 4vh; display: flex; gap: 20px; }
         .small-btn {
-            padding: 12px 25px; border: none; border-radius: 20px;
+            padding: 15px 30px; border: none; border-radius: 20px;
             color: white; font-family: 'Bowlby One SC', sans-serif;
-            box-shadow: 0 5px 0 rgba(0,0,0,0.2);
+            font-size: 1.2rem;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
         }
 
-        /* Animations */
+        /* Animation Classes */
         .slide-out-left { transform: translateX(-160%) rotate(-15deg); opacity: 0; }
         .slide-out-right { transform: translateX(160%) rotate(15deg); opacity: 0; }
     </style>
@@ -163,8 +186,8 @@
 
     <div id="game-viewport">
         <div id="game-card">
-            <div id="visual-display" onmousedown="handleInteraction()" ontouchstart="handleInteraction()">🦁</div>
-            <h2 id="description">Ready?</h2>
+            <div id="visual-display" onmousedown="handleInteraction()" ontouchstart="handleInteraction()">A</div>
+            <h2 id="description">A</h2>
         </div>
     </div>
 
@@ -175,46 +198,54 @@
 
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Helvetica Alphabet Data
+    const alphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => ({ 
+        emoji: l, text: l, voice: l 
+    }));
+
     const categories = {
-        alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => ({ emoji: l, text: `Letter ${l}`, voice: l })),
+        alphabet: alphabetList,
         animals: [
-            { emoji: "🦁", text: "Lion says ROAR!", voice: "The Lion says roar" },
-            { emoji: "🐘", text: "Big Elephant!", voice: "The Elephant says trumpet" },
-            { emoji: "🦒", text: "Tall Giraffe", voice: "Look at the tall giraffe" },
-            { emoji: "🐸", text: "Jump Froggy!", voice: "The frog says ribbit" }
+            { emoji: "🦁", text: "Lion", voice: "Lion" },
+            { emoji: "🐘", text: "Elephant", voice: "Elephant" },
+            { emoji: "🦒", text: "Giraffe", voice: "Giraffe" },
+            { emoji: "🐸", text: "Frog", voice: "Frog" }
         ],
         vehicles: [
-            { emoji: "🏍️", text: "Fast Motorcycle", voice: "Motorcycle!" },
-            { emoji: "🚒", text: "Fire Truck!", voice: "Fire truck!" },
-            { emoji: "🚂", text: "Choo Choo Train!", voice: "Train!" },
-            { emoji: "🚐", text: "A Big Van", voice: "Van" },
-            { emoji: "🚑", text: "Ambulance!", voice: "Ambulance!" },
-            { emoji: "🚕", text: "Yellow Taxi", voice: "Taxi!" },
-            { emoji: "🚜", text: "Bumpy Tractor", voice: "Tractor!" },
-            { emoji: "🏎️", text: "Race Car", voice: "Race car!" },
-            { emoji: "🛑", text: "Stop Sign!", voice: "Stop!" }
+            { emoji: "🏍️", text: "Motorcycle", voice: "Motorcycle" },
+            { emoji: "🚒", text: "Fire Truck", voice: "Fire truck" },
+            { emoji: "🚂", text: "Train", voice: "Train" },
+            { emoji: "🚐", text: "Van", voice: "Van" },
+            { emoji: "🚑", text: "Ambulance", voice: "Ambulance" },
+            { emoji: "🚕", text: "Taxi", voice: "Taxi" },
+            { emoji: "🚜", text: "Tractor", voice: "Tractor" },
+            { emoji: "🏎️", text: "Race Car", voice: "Race car" },
+            { emoji: "🛑", text: "Stop", voice: "Stop" }
         ],
         feelings: [
-            { emoji: "🥰", text: "I feel Loved", voice: "Love" },
-            { emoji: "❤️", text: "Big Heart", voice: "Heart" },
-            { emoji: "🥳", text: "Party Time!", voice: "Party!" },
-            { emoji: "😱", text: "Surprise!", voice: "Surprise!" },
-            { emoji: "😂", text: "So Silly!", voice: "Silly" }
+            { emoji: "🥰", text: "Loved", voice: "Loved" },
+            { emoji: "❤️", text: "Heart", voice: "Heart" },
+            { emoji: "🥳", text: "Party", voice: "Party" },
+            { emoji: "😱", text: "Surprise", voice: "Surprise" },
+            { emoji: "😂", text: "Silly", voice: "Silly" }
         ],
-        numbers: "0123456789".split("").map(n => ({ emoji: n + "️⃣", text: `Number ${n}`, voice: n })).concat([{ emoji: "🔟", text: "Number Ten", voice: "Ten" }])
+        numbers: [
+            ...("0123456789".split("").map(n => ({ emoji: n + "️⃣", text: n, voice: n }))),
+            { emoji: "🔟", text: "10", voice: "10" }
+        ]
     };
 
     let currentGameData = [];
     let currentIndex = 0;
-    let emojiCounter = 0;
-    let starsCollected = 0;
+    let swipeCount = 0;
 
     function playKnock() {
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(160, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
         gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
@@ -231,8 +262,7 @@
             currentGameData = [...categories[cat]];
         }
         currentIndex = 0;
-        emojiCounter = 0;
-        starsCollected = 0;
+        swipeCount = 0;
         document.getElementById('star-bar').innerHTML = "";
         showScreen('game-screen');
         updateScreen();
@@ -270,11 +300,8 @@
 
     function nextCard() {
         currentIndex = (currentIndex + 1) % currentGameData.length;
-        emojiCounter++;
-        
-        if (emojiCounter % 5 === 0) {
-            triggerMilestone();
-        }
+        swipeCount++;
+        if (swipeCount % 5 === 0) triggerMilestone();
         updateScreen('next');
     }
 
@@ -284,20 +311,27 @@
     }
 
     function triggerMilestone() {
-        starsCollected++;
         document.getElementById('star-bar').innerHTML += "⭐";
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, shapes: ['star'], colors: ['#FFDE59'] });
+        // Massive star confetti
+        confetti({ 
+            particleCount: 120, 
+            spread: 80, 
+            origin: { y: 0.5 }, 
+            shapes: ['star'], 
+            colors: ['#FFDE59'],
+            scalar: 2 // 2x bigger confetti stars too
+        });
         
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance("Wow!");
-        msg.pitch = 1.6;
+        msg.pitch = 1.7;
         window.speechSynthesis.speak(msg);
     }
 
-    function speakCurrent(custom) {
+    function speakCurrent() {
         window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance(custom || currentGameData[currentIndex].voice);
-        msg.pitch = 1.4;
+        const msg = new SpeechSynthesisUtterance(currentGameData[currentIndex].voice);
+        msg.pitch = 1.3;
         window.speechSynthesis.speak(msg);
     }
 
