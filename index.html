@@ -52,10 +52,10 @@
         .status-bar {
             height: 50px;
             font-size: 3rem;
-            display: flex;
+            display: none; /* Hidden by default in Menu */
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 5px;
         }
 
         /* 2. Main Screen Layout */
@@ -193,10 +193,11 @@
     <div class="menu-grid">
         <button class="cat-card" onclick="startGame('alphabet')"><span>ABC</span>Alphabet</button>
         <button class="cat-card" onclick="startGame('numbers')"><span>🔢</span>Numbers</button>
+        <button class="cat-card" onclick="startGame('food')"><span>🍌</span>Food</button>
         <button class="cat-card" onclick="startGame('colors')"><span>🎨</span>Colors</button>
-        <button class="cat-card" onclick="startGame('shapes')"><span>🔺</span>Shapes</button>
+        <button class="cat-card" onclick="startGame('shapes')"><span>❤️</span>Shapes</button>
         <button class="cat-card" onclick="startGame('animals')"><span>🐶</span>Animals</button>
-        <button class="cat-card" onclick="startGame('vehicles')"><span>🚀</span>Vroom!</button>
+        <button class="cat-card" onclick="startGame('vehicles')"><span>🚒</span>Vroom!</button>
         <button class="cat-card" onclick="startGame('feelings')"><span>🥰</span>Feelings</button>
         <button class="cat-card random-btn" onclick="startGame('random')"><span>🎲</span>Random Mix</button>
     </div>
@@ -231,6 +232,18 @@
 
     const categories = {
         alphabet: alphabetList,
+        food: [
+            { emoji: "🍎", text: "Apple", voice: "Apple" },
+            { emoji: "🍌", text: "Banana", voice: "Banana" },
+            { emoji: "🍇", text: "Grapes", voice: "Grapes" },
+            { emoji: "🍕", text: "Pizza", voice: "Pizza" },
+            { emoji: "🍦", text: "Ice Cream", voice: "Ice Cream" },
+            { emoji: "🍩", text: "Donut", voice: "Donut" },
+            { emoji: "🍪", text: "Cookie", voice: "Cookie" },
+            { emoji: "🥦", text: "Broccoli", voice: "Broccoli" },
+            { emoji: "🥕", text: "Carrot", voice: "Carrot" },
+            { emoji: "🍔", text: "Burger", voice: "Burger" }
+        ],
         colors: [
             { emoji: "🔴", text: "Red", voice: "Red" },
             { emoji: "🟠", text: "Orange", voice: "Orange" },
@@ -248,7 +261,7 @@
             { emoji: "🔴", text: "Circle", voice: "Circle" },
             { emoji: "⭐", text: "Star", voice: "Star" },
             { emoji: "🔷", text: "Diamond", voice: "Diamond" },
-            { emoji: "💙", text: "Heart", voice: "Heart" },
+            { emoji: "❤️", text: "Heart", voice: "Heart" },
             { emoji: "🛑", text: "Octagon", voice: "Octagon" }
         ],
         animals: [
@@ -304,6 +317,7 @@
     let currentGameData = [];
     let currentIndex = 0;
     let swipeCount = 0;
+    let starsCollected = 0;
 
     function playKnock() {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -328,11 +342,15 @@
         }
         currentIndex = 0;
         swipeCount = 0;
-        document.getElementById('star-bar').innerHTML = "";
+        starsCollected = 0;
+        
+        // Hide/Clear stars initially
+        const starBar = document.getElementById('star-bar');
+        starBar.innerHTML = "";
+        starBar.style.display = 'flex'; // Show only when playing
+        
         showScreen('game-screen');
         updateScreen();
-        // Don't auto-speak on load, waiting for interaction usually better, 
-        // but if you want it: setTimeout(() => speakCurrent(), 500);
     }
 
     function showScreen(id) {
@@ -340,7 +358,10 @@
         document.getElementById(id).classList.add('active');
     }
 
-    function goHome() { showScreen('menu-screen'); }
+    function goHome() { 
+        document.getElementById('star-bar').style.display = 'none'; // Hide stars in menu
+        showScreen('menu-screen'); 
+    }
 
     function updateScreen(direction = 'none') {
         const card = document.getElementById('game-card');
@@ -373,7 +394,6 @@
         if (swipeCount % 5 === 0) {
             triggerMilestone();
         } else {
-            // Auto-speak after slight delay to match animation
             setTimeout(() => speakCurrent(), 300);
         }
     }
@@ -381,12 +401,21 @@
     function prevCard() {
         currentIndex = (currentIndex - 1 + currentGameData.length) % currentGameData.length;
         updateScreen('prev');
-        // Auto-speak on back swipe too
         setTimeout(() => speakCurrent(), 300);
     }
 
     function triggerMilestone() {
-        document.getElementById('star-bar').innerHTML += "⭐";
+        starsCollected++;
+        const starBar = document.getElementById('star-bar');
+        
+        if (starsCollected > 10) {
+            // Reset after 10
+            starsCollected = 1;
+            starBar.innerHTML = "⭐";
+        } else {
+            starBar.innerHTML += "⭐";
+        }
+
         confetti({ 
             particleCount: 120, 
             spread: 80, 
@@ -397,8 +426,7 @@
         });
         
         window.speechSynthesis.cancel();
-        // REWARD TEXT CHANGE:
-        const msg = new SpeechSynthesisUtterance("Great job Misha!");
+        const msg = new SpeechSynthesisUtterance("Great job!");
         msg.pitch = 1.6;
         window.speechSynthesis.speak(msg);
     }
