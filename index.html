@@ -5,152 +5,299 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Instamoji</title>
     
+    <link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&display=swap" rel="stylesheet">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Instamoji">
-    <link rel="apple-touch-icon" href="https://emojiapi.dev/api/v1/smiling_face_with_hearts/180.png">
-
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         :root {
             --primary: #5271FF;
             --secondary: #FF5757;
-            --accent: #A855F7;
             --bg: #FFDE59;
             --text-dark: #333;
         }
 
         body {
-            margin: 0; padding: 0; font-family: 'Comic Sans MS', cursive, sans-serif;
-            background-color: var(--bg); overflow: hidden; touch-action: none; user-select: none;
+            margin: 0; padding: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: var(--bg);
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+        }
+
+        /* Persistent Logo */
+        .header-logo {
+            position: fixed;
+            top: 25px;
+            width: 100%;
+            text-align: center;
+            font-family: 'Bowlby One SC', sans-serif;
+            font-size: 2.8rem;
+            color: white;
+            text-shadow: 4px 4px 0px var(--secondary);
+            z-index: 100;
+            letter-spacing: 2px;
         }
 
         .screen { display: none; height: 100vh; width: 100vw; flex-direction: column; align-items: center; justify-content: center; }
         .active { display: flex; }
 
-        h1.brand { font-size: 4rem; color: white; text-shadow: 4px 4px 0px var(--secondary); margin: 0 0 20px 0; }
-
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 400px; }
+        /* Menu Grid */
+        .menu-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            width: 85%; 
+            max-width: 400px; 
+            margin-top: 80px; 
+        }
         
         .cat-card {
-            background: white; padding: 20px; border-radius: 25px; font-size: 1.4rem; border: none;
-            box-shadow: 0 8px 0 #d4b840; cursor: pointer; transition: transform 0.1s;
+            background: white; 
+            padding: 20px 10px; 
+            border-radius: 25px; 
+            font-size: 1.1rem; 
+            border: none;
+            box-shadow: 0 8px 0 #d4b840; 
+            cursor: pointer; 
+            font-family: 'Bowlby One SC', sans-serif;
+            color: var(--text-dark);
         }
-        .cat-card:active { transform: scale(0.95); }
+        .cat-card span { font-size: 2rem; display: block; margin-bottom: 5px; }
 
-        #game-container { background: white; width: 85%; max-width: 400px; padding: 30px; border-radius: 40px; text-align: center; box-shadow: 0 10px 0 #d4b840; }
-        #visual-display { font-size: 110px; height: 180px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s; }
-        #visual-display img { width: 160px; height: 160px; border-radius: 20px; object-fit: cover; }
+        /* Game Card Container */
+        #game-viewport {
+            width: 80%;
+            max-width: 350px;
+            perspective: 1000px;
+            position: relative;
+        }
 
-        h2#description { font-size: 1.8rem; color: var(--text-dark); margin: 20px 0; min-height: 2.2em; }
+        #game-card {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 10px 0 #d4b840;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+        }
 
-        .btn-row { display: flex; gap: 10px; margin-top: 15px; justify-content: center; width: 100%; }
-        button.action-btn { padding: 15px 20px; border: none; border-radius: 20px; color: white; font-size: 1.2rem; font-weight: bold; cursor: pointer; flex: 1; }
+        #visual-display {
+            font-size: 130px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
 
-        .blue { background: var(--primary); box-shadow: 0 6px 0 #3a52c7; }
-        .red { background: var(--secondary); box-shadow: 0 6px 0 #c44242; }
-        .purple { background: var(--accent); box-shadow: 0 6px 0 #7e3af2; }
-        .gray { background: #94a3b8; box-shadow: 0 6px 0 #64748b; margin-top: 20px; width: 100%;}
-        button:active { transform: translateY(4px); box-shadow: none !important; }
+        #visual-display:active {
+            transform: scale(1.25);
+        }
+
+        h2#description { font-size: 1.6rem; color: var(--text-dark); margin: 15px 0 0; min-height: 1.5em; }
+
+        /* Side Navigation Arrows */
+        .side-nav {
+            position: fixed;
+            top: 0;
+            height: 100%;
+            width: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            z-index: 50;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .left-arrow { left: 0; }
+        .right-arrow { right: 0; }
+
+        /* Bottom Controls */
+        .bottom-actions {
+            position: fixed;
+            bottom: 40px;
+            display: flex;
+            gap: 20px;
+        }
+        .small-btn {
+            padding: 12px 25px; border: none; border-radius: 20px;
+            color: white; font-size: 1rem; font-family: 'Bowlby One SC', sans-serif;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.2);
+        }
+
+        /* Animations */
+        .slide-out-left { transform: translateX(-160%) rotate(-15deg); opacity: 0; }
+        .slide-out-right { transform: translateX(160%) rotate(15deg); opacity: 0; }
     </style>
 </head>
 <body>
 
+<div class="header-logo">INSTAMOJI</div>
+
 <div id="menu-screen" class="screen active">
-    <h1 class="brand">Instamoji</h1>
     <div class="menu-grid">
-        <button class="cat-card" onclick="startGame('animals')">🦒<br>Animals</button>
-        <button class="cat-card" onclick="startGame('cars')">🚜<br>Vroom!</button>
-        <button class="cat-card" onclick="startGame('feelings')">🥰<br>Feelings</button>
-        <button class="cat-card" onclick="startGame('mix')">🎲<br>Mix All</button>
+        <button class="cat-card" onclick="startGame('animals')"><span>🦁</span>Animals</button>
+        <button class="cat-card" onclick="startGame('vehicles')"><span>🚀</span>Vroom!</button>
+        <button class="cat-card" onclick="startGame('feelings')"><span>🥰</span>Feelings</button>
+        <button class="cat-card" onclick="startGame('numbers')"><span>🔢</span>Numbers</button>
     </div>
 </div>
 
 <div id="game-screen" class="screen">
-    <div id="game-container">
-        <div id="visual-display" onclick="speakCurrent()">🦁</div>
-        <h2 id="description">Ready?</h2>
-        
-        <div class="btn-row">
-            <button class="action-btn blue" onclick="prevCard()">⬅️</button>
-            <button class="action-btn blue" onclick="nextCard()">➡️</button>
-        </div>
+    <div class="side-nav left-arrow" onclick="prevCard()">◀</div>
+    <div class="side-nav right-arrow" onclick="nextCard()">▶</div>
 
-        <div class="btn-row">
-            <button id="mode-btn" class="action-btn red" onclick="toggleGif()">Show GIFs</button>
-            <button class="action-btn purple" onclick="shuffleGame()">🔀 Mix</button>
+    <div id="game-viewport">
+        <div id="game-card">
+            <div id="visual-display" onmousedown="handleInteraction()" ontouchstart="handleInteraction()">🦁</div>
+            <h2 id="description">Ready?</h2>
         </div>
+    </div>
 
-        <button class="action-btn gray" onclick="goHome()">🏠 Home</button>
+    <div class="bottom-actions">
+        <button class="small-btn" style="background:#A855F7" onclick="shuffleGame()">MIX</button>
+        <button class="small-btn" style="background:#94a3b8" onclick="goHome()">HOME</button>
     </div>
 </div>
 
 <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
     const categories = {
         animals: [
-            { emoji: "🦁", text: "Lion says ROAR!", voice: "The Lion says roar", gif: "https://media.giphy.com/media/OAW8YVbMNDRWE/giphy.gif" },
-            { emoji: "🐘", text: "Big Elephant!", voice: "The Elephant says trumpet", gif: "https://media.giphy.com/media/l41lS23nnE9uLpN2U/giphy.gif" },
-            { emoji: "🦒", text: "Tall Giraffe", voice: "Look at the tall giraffe", gif: "https://media.giphy.com/media/Y97pPl9Qf2U3S/giphy.gif" },
-            { emoji: "🐸", text: "Jump Froggy!", voice: "The frog says ribbit", gif: "https://media.giphy.com/media/3o7at0quy0AZpBA7jW/giphy.gif" }
+            { emoji: "🦁", text: "Lion says ROAR!", voice: "The Lion says roar" },
+            { emoji: "🐘", text: "Big Elephant!", voice: "The Elephant says trumpet" },
+            { emoji: "🦒", text: "Tall Giraffe", voice: "Look at the tall giraffe" },
+            { emoji: "🐸", text: "Jump Froggy!", voice: "The frog says ribbit" }
         ],
-        cars: [
-            { emoji: "🚜", text: "Bumpy Tractor", voice: "The tractor goes chugga chugga chugga", gif: "https://media.giphy.com/media/3o7TKVUn7iM8FMEU24/giphy.gif" },
-            { emoji: "🚒", text: "Fire Truck!", voice: "The fire truck goes wee-woo wee-woo", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHR5ZGRyZzhiaW9qZGR3bm5uNmx4dzY0dm9sZGd6ZzhiaW9qZGR3biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKMGpxx6B837Lpu/giphy.gif" },
-            { emoji: "🏎️", text: "Fast Race Car", voice: "The race car goes vroom vroom", gif: "https://media.giphy.com/media/5xtDarJZ1KuAgU269Xq/giphy.gif" },
-            { emoji: "🚑", text: "Ambulance!", voice: "Bee-doo bee-doo ambulance", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHR5ZGRyZzhiaW9qZGR3bm5uNmx4dzY0dm9sZGd6ZzhiaW9qZGR3biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKVUn7iM8FMEU24/giphy.gif" }
+        vehicles: [
+            { emoji: "🏍️", text: "Fast Motorcycle", voice: "Vroom vroom! Motorcycle!" },
+            { emoji: "🚒", text: "Fire Truck!", voice: "Wee-woo! Fire truck!" },
+            { emoji: "🚂", text: "Choo Choo Train!", voice: "Choo choo! Here comes the train!" },
+            { emoji: "🚐", text: "A Big Van", voice: "Look at the big van" },
+            { emoji: "🚑", text: "Ambulance!", voice: "Bee-doo! Ambulance!" },
+            { emoji: "🚕", text: "Yellow Taxi", voice: "Beep beep! Yellow taxi!" },
+            { emoji: "🚜", text: "Bumpy Tractor", voice: "Chugga chugga tractor!" },
+            { emoji: "🏎️", text: "Race Car", voice: "Zoom! Fast race car!" },
+            { emoji: "🛑", text: "Stop Sign!", voice: "Stop! Red light!" }
         ],
         feelings: [
-            { emoji: "🥰", text: "I feel Loved", voice: "I feel so much love", gif: "https://media.giphy.com/media/3o7TKMGpxx6B837Lpu/giphy.gif" },
-            { emoji: "❤️", text: "Big Heart", voice: "I love you very much", gif: "https://media.giphy.com/media/l41lS23nnE9uLpN2U/giphy.gif" },
-            { emoji: "🥳", text: "Party Time!", voice: "Yay! Let's have a party!", gif: "https://media.giphy.com/media/3o7at0quy0AZpBA7jW/giphy.gif" },
-            { emoji: "😱", text: "Surprise!", voice: "Whoa! I am surprised!", gif: "https://media.giphy.com/media/OAW8YVbMNDRWE/giphy.gif" },
-            { emoji: "😂", text: "So Silly!", voice: "Hahaha! You are so silly!", gif: "https://media.giphy.com/media/3o7TKUslwxqKHzpSPS/giphy.gif" }
+            { emoji: "🥰", text: "I feel Loved", voice: "I feel so much love" },
+            { emoji: "❤️", text: "Big Heart", voice: "I love you very much" },
+            { emoji: "🥳", text: "Party Time!", voice: "Yay! Let's have a party!" },
+            { emoji: "😱", text: "Surprise!", voice: "Whoa! I am surprised!" },
+            { emoji: "😂", text: "So Silly!", voice: "Hahaha! You are so silly!" }
+        ],
+        numbers: [
+            { emoji: "0️⃣", text: "Number Zero", voice: "Zero" },
+            { emoji: "1️⃣", text: "Number One", voice: "One" },
+            { emoji: "2️⃣", text: "Number Two", voice: "Two" },
+            { emoji: "3️⃣", text: "Number Three", voice: "Three" },
+            { emoji: "4️⃣", text: "Number Four", voice: "Four" },
+            { emoji: "5️⃣", text: "Number Five", voice: "Five" },
+            { emoji: "6️⃣", text: "Number Six", voice: "Six" },
+            { emoji: "7️⃣", text: "Number Seven", voice: "Seven" },
+            { emoji: "8️⃣", text: "Number Eight", voice: "Eight" },
+            { emoji: "9️⃣", text: "Number Nine", voice: "Nine" },
+            { emoji: "🔟", text: "Number Ten", voice: "Ten" }
         ]
     };
 
     let currentGameData = [];
     let currentIndex = 0;
-    let isGifMode = false;
     let touchStartX = 0;
 
+    function playKnock() {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+    }
+
+    function handleInteraction() {
+        playKnock();
+        speakCurrent();
+    }
+
     function startGame(cat) {
-        currentGameData = (cat === 'mix') ? [...categories.animals, ...categories.cars, ...categories.feelings] : [...categories[cat]];
-        if (cat === 'mix') shuffleGame(false);
+        currentGameData = [...categories[cat]];
         currentIndex = 0;
         showScreen('game-screen');
         updateScreen();
-        speakCurrent("Instamoji time!");
     }
 
-    function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
     function goHome() { showScreen('menu-screen'); }
 
-    function updateScreen() {
+    function updateScreen(direction = 'none') {
+        const card = document.getElementById('game-card');
         const item = currentGameData[currentIndex];
-        const display = document.getElementById('visual-display');
-        document.getElementById('description').innerText = item.text;
-        display.style.opacity = 0;
-        setTimeout(() => {
-            display.innerHTML = isGifMode ? `<img src="${item.gif}">` : item.emoji;
-            display.style.opacity = 1;
-        }, 150);
+        
+        if (direction !== 'none') {
+            card.classList.add(direction === 'next' ? 'slide-out-left' : 'slide-out-right');
+            setTimeout(() => {
+                document.getElementById('visual-display').innerText = item.emoji;
+                document.getElementById('description').innerText = item.text;
+                card.classList.remove('slide-out-left', 'slide-out-right');
+                card.style.transition = 'none';
+                card.style.transform = direction === 'next' ? 'translateX(100%)' : 'translateX(-100%)';
+                setTimeout(() => {
+                    card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s';
+                    card.style.transform = 'translateX(0)';
+                }, 20);
+            }, 300);
+        } else {
+            document.getElementById('visual-display').innerText = item.emoji;
+            document.getElementById('description').innerText = item.text;
+        }
     }
 
-    function nextCard() { currentIndex = (currentIndex + 1) % currentGameData.length; if (currentIndex === 0) launchReward(); updateScreen(); }
-    function prevCard() { currentIndex = (currentIndex - 1 + currentGameData.length) % currentGameData.length; updateScreen(); }
-    function toggleGif() { isGifMode = !isGifMode; document.getElementById('mode-btn').innerText = isGifMode ? "Show Emoji" : "Show GIFs"; updateScreen(); }
-    function shuffleGame(voice = true) { currentGameData.sort(() => Math.random() - 0.5); currentIndex = 0; updateScreen(); if(voice) speakCurrent("Mix mix mix!"); }
-    
+    function nextCard() {
+        currentIndex = (currentIndex + 1) % currentGameData.length;
+        if (currentIndex === 0) launchReward();
+        updateScreen('next');
+    }
+
+    function prevCard() {
+        currentIndex = (currentIndex - 1 + currentGameData.length) % currentGameData.length;
+        updateScreen('prev');
+    }
+
+    function shuffleGame() {
+        currentGameData.sort(() => Math.random() - 0.5);
+        currentIndex = 0;
+        updateScreen();
+        speakCurrent("Mix it up!");
+    }
+
     function speakCurrent(custom) {
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(custom || currentGameData[currentIndex].voice);
-        msg.pitch = 1.3; msg.rate = 0.9; window.speechSynthesis.speak(msg);
+        msg.pitch = 1.4;
+        window.speechSynthesis.speak(msg);
     }
 
     function launchReward() {
-        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, shapes: ['star'], colors: ['#FFDE59', '#5271FF', '#FF5757'] });
-        speakCurrent("Wow! You finished the set!");
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, shapes: ['star'], colors: ['#5271FF', '#FF5757', '#FFDE59'] });
     }
 
     document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
