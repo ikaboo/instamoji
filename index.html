@@ -28,57 +28,79 @@
             user-select: none;
         }
 
-        /* Persistent Logo */
-        .header-logo {
+        /* Top Bar: Logo + Star Status */
+        .top-container {
             position: fixed;
-            top: 25px;
+            top: 5vh; /* Moved 25% higher overall by lifting top elements */
             width: 100%;
             text-align: center;
+            z-index: 100;
+        }
+
+        .header-logo {
             font-family: 'Bowlby One SC', sans-serif;
             font-size: 2.8rem;
             color: white;
             text-shadow: 4px 4px 0px var(--secondary);
-            z-index: 100;
+            margin-bottom: 5px;
             letter-spacing: 2px;
         }
 
-        .screen { display: none; height: 100vh; width: 100vw; flex-direction: column; align-items: center; justify-content: center; }
+        .status-bar {
+            height: 40px;
+            font-size: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .screen { 
+            display: none; 
+            height: 100vh; 
+            width: 100vw; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: flex-start; /* Changed from center to lift content */
+            padding-top: 15vh; /* Adjusted for higher placement */
+        }
         .active { display: flex; }
 
         /* Menu Grid */
         .menu-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
-            gap: 15px; 
+            gap: 12px; 
             width: 85%; 
             max-width: 400px; 
-            margin-top: 80px; 
+            margin-top: 20px; 
         }
         
         .cat-card {
             background: white; 
-            padding: 20px 10px; 
-            border-radius: 25px; 
-            font-size: 1.1rem; 
+            padding: 15px 5px; 
+            border-radius: 20px; 
+            font-size: 1rem; 
             border: none;
-            box-shadow: 0 8px 0 #d4b840; 
+            box-shadow: 0 6px 0 #d4b840; 
             cursor: pointer; 
             font-family: 'Bowlby One SC', sans-serif;
             color: var(--text-dark);
         }
-        .cat-card span { font-size: 2rem; display: block; margin-bottom: 5px; }
+        .cat-card span { font-size: 1.8rem; display: block; margin-bottom: 2px; }
+        .random-btn { grid-column: span 2; background: #A855F7; color: white; box-shadow: 0 6px 0 #7e3af2; }
 
-        /* Game Card Container */
+        /* Game Viewport */
         #game-viewport {
             width: 80%;
             max-width: 350px;
             perspective: 1000px;
-            position: relative;
+            margin-top: 30px;
         }
 
         #game-card {
             background: white;
-            padding: 40px 20px;
+            padding: 30px 20px;
             border-radius: 40px;
             text-align: center;
             box-shadow: 0 10px 0 #d4b840;
@@ -86,49 +108,29 @@
         }
 
         #visual-display {
-            font-size: 130px;
-            height: 180px;
+            font-size: 120px;
+            height: 150px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: transform 0.1s ease;
         }
+        #visual-display:active { transform: scale(1.25); }
 
-        #visual-display:active {
-            transform: scale(1.25);
-        }
+        h2#description { font-size: 1.5rem; color: var(--text-dark); margin: 10px 0 0; min-height: 1.2em; }
 
-        h2#description { font-size: 1.6rem; color: var(--text-dark); margin: 15px 0 0; min-height: 1.5em; }
-
-        /* Side Navigation Arrows */
         .side-nav {
-            position: fixed;
-            top: 0;
-            height: 100%;
-            width: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3.5rem;
-            color: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            z-index: 50;
-            -webkit-tap-highlight-color: transparent;
+            position: fixed; top: 0; height: 100%; width: 70px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3.5rem; color: rgba(255, 255, 255, 0.5); z-index: 50;
         }
-        .left-arrow { left: 0; }
-        .right-arrow { right: 0; }
+        .left-arrow { left: 0; } .right-arrow { right: 0; }
 
-        /* Bottom Controls */
-        .bottom-actions {
-            position: fixed;
-            bottom: 40px;
-            display: flex;
-            gap: 20px;
-        }
+        .bottom-actions { position: fixed; bottom: 40px; display: flex; gap: 20px; }
         .small-btn {
             padding: 12px 25px; border: none; border-radius: 20px;
-            color: white; font-size: 1rem; font-family: 'Bowlby One SC', sans-serif;
+            color: white; font-family: 'Bowlby One SC', sans-serif;
             box-shadow: 0 5px 0 rgba(0,0,0,0.2);
         }
 
@@ -139,14 +141,19 @@
 </head>
 <body>
 
-<div class="header-logo">INSTAMOJI</div>
+<div class="top-container">
+    <div class="header-logo">INSTAMOJI</div>
+    <div id="star-bar" class="status-bar"></div>
+</div>
 
 <div id="menu-screen" class="screen active">
     <div class="menu-grid">
+        <button class="cat-card" onclick="startGame('alphabet')"><span>ABC</span>Alphabet</button>
+        <button class="cat-card" onclick="startGame('numbers')"><span>🔢</span>Numbers</button>
         <button class="cat-card" onclick="startGame('animals')"><span>🦁</span>Animals</button>
         <button class="cat-card" onclick="startGame('vehicles')"><span>🚀</span>Vroom!</button>
         <button class="cat-card" onclick="startGame('feelings')"><span>🥰</span>Feelings</button>
-        <button class="cat-card" onclick="startGame('numbers')"><span>🔢</span>Numbers</button>
+        <button class="cat-card random-btn" onclick="startGame('random')"><span>🎲</span>Random Mix</button>
     </div>
 </div>
 
@@ -162,15 +169,14 @@
     </div>
 
     <div class="bottom-actions">
-        <button class="small-btn" style="background:#A855F7" onclick="shuffleGame()">MIX</button>
         <button class="small-btn" style="background:#94a3b8" onclick="goHome()">HOME</button>
     </div>
 </div>
 
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
     const categories = {
+        alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => ({ emoji: l, text: `Letter ${l}`, voice: l })),
         animals: [
             { emoji: "🦁", text: "Lion says ROAR!", voice: "The Lion says roar" },
             { emoji: "🐘", text: "Big Elephant!", voice: "The Elephant says trumpet" },
@@ -178,41 +184,30 @@
             { emoji: "🐸", text: "Jump Froggy!", voice: "The frog says ribbit" }
         ],
         vehicles: [
-            { emoji: "🏍️", text: "Fast Motorcycle", voice: "Vroom vroom! Motorcycle!" },
-            { emoji: "🚒", text: "Fire Truck!", voice: "Wee-woo! Fire truck!" },
-            { emoji: "🚂", text: "Choo Choo Train!", voice: "Choo choo! Here comes the train!" },
-            { emoji: "🚐", text: "A Big Van", voice: "Look at the big van" },
-            { emoji: "🚑", text: "Ambulance!", voice: "Bee-doo! Ambulance!" },
-            { emoji: "🚕", text: "Yellow Taxi", voice: "Beep beep! Yellow taxi!" },
-            { emoji: "🚜", text: "Bumpy Tractor", voice: "Chugga chugga tractor!" },
-            { emoji: "🏎️", text: "Race Car", voice: "Zoom! Fast race car!" },
-            { emoji: "🛑", text: "Stop Sign!", voice: "Stop! Red light!" }
+            { emoji: "🏍️", text: "Fast Motorcycle", voice: "Motorcycle!" },
+            { emoji: "🚒", text: "Fire Truck!", voice: "Fire truck!" },
+            { emoji: "🚂", text: "Choo Choo Train!", voice: "Train!" },
+            { emoji: "🚐", text: "A Big Van", voice: "Van" },
+            { emoji: "🚑", text: "Ambulance!", voice: "Ambulance!" },
+            { emoji: "🚕", text: "Yellow Taxi", voice: "Taxi!" },
+            { emoji: "🚜", text: "Bumpy Tractor", voice: "Tractor!" },
+            { emoji: "🏎️", text: "Race Car", voice: "Race car!" },
+            { emoji: "🛑", text: "Stop Sign!", voice: "Stop!" }
         ],
         feelings: [
-            { emoji: "🥰", text: "I feel Loved", voice: "I feel so much love" },
-            { emoji: "❤️", text: "Big Heart", voice: "I love you very much" },
-            { emoji: "🥳", text: "Party Time!", voice: "Yay! Let's have a party!" },
-            { emoji: "😱", text: "Surprise!", voice: "Whoa! I am surprised!" },
-            { emoji: "😂", text: "So Silly!", voice: "Hahaha! You are so silly!" }
+            { emoji: "🥰", text: "I feel Loved", voice: "Love" },
+            { emoji: "❤️", text: "Big Heart", voice: "Heart" },
+            { emoji: "🥳", text: "Party Time!", voice: "Party!" },
+            { emoji: "😱", text: "Surprise!", voice: "Surprise!" },
+            { emoji: "😂", text: "So Silly!", voice: "Silly" }
         ],
-        numbers: [
-            { emoji: "0️⃣", text: "Number Zero", voice: "Zero" },
-            { emoji: "1️⃣", text: "Number One", voice: "One" },
-            { emoji: "2️⃣", text: "Number Two", voice: "Two" },
-            { emoji: "3️⃣", text: "Number Three", voice: "Three" },
-            { emoji: "4️⃣", text: "Number Four", voice: "Four" },
-            { emoji: "5️⃣", text: "Number Five", voice: "Five" },
-            { emoji: "6️⃣", text: "Number Six", voice: "Six" },
-            { emoji: "7️⃣", text: "Number Seven", voice: "Seven" },
-            { emoji: "8️⃣", text: "Number Eight", voice: "Eight" },
-            { emoji: "9️⃣", text: "Number Nine", voice: "Nine" },
-            { emoji: "🔟", text: "Number Ten", voice: "Ten" }
-        ]
+        numbers: "0123456789".split("").map(n => ({ emoji: n + "️⃣", text: `Number ${n}`, voice: n })).concat([{ emoji: "🔟", text: "Number Ten", voice: "Ten" }])
     };
 
     let currentGameData = [];
     let currentIndex = 0;
-    let touchStartX = 0;
+    let emojiCounter = 0;
+    let starsCollected = 0;
 
     function playKnock() {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -223,20 +218,22 @@
         osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
         gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
     }
 
-    function handleInteraction() {
-        playKnock();
-        speakCurrent();
-    }
+    function handleInteraction() { playKnock(); speakCurrent(); }
 
     function startGame(cat) {
-        currentGameData = [...categories[cat]];
+        if (cat === 'random') {
+            currentGameData = Object.values(categories).flat().sort(() => Math.random() - 0.5);
+        } else {
+            currentGameData = [...categories[cat]];
+        }
         currentIndex = 0;
+        emojiCounter = 0;
+        starsCollected = 0;
+        document.getElementById('star-bar').innerHTML = "";
         showScreen('game-screen');
         updateScreen();
     }
@@ -273,7 +270,11 @@
 
     function nextCard() {
         currentIndex = (currentIndex + 1) % currentGameData.length;
-        if (currentIndex === 0) launchReward();
+        emojiCounter++;
+        
+        if (emojiCounter % 5 === 0) {
+            triggerMilestone();
+        }
         updateScreen('next');
     }
 
@@ -282,11 +283,15 @@
         updateScreen('prev');
     }
 
-    function shuffleGame() {
-        currentGameData.sort(() => Math.random() - 0.5);
-        currentIndex = 0;
-        updateScreen();
-        speakCurrent("Mix it up!");
+    function triggerMilestone() {
+        starsCollected++;
+        document.getElementById('star-bar').innerHTML += "⭐";
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, shapes: ['star'], colors: ['#FFDE59'] });
+        
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance("Wow!");
+        msg.pitch = 1.6;
+        window.speechSynthesis.speak(msg);
     }
 
     function speakCurrent(custom) {
@@ -296,10 +301,7 @@
         window.speechSynthesis.speak(msg);
     }
 
-    function launchReward() {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, shapes: ['star'], colors: ['#5271FF', '#FF5757', '#FFDE59'] });
-    }
-
+    let touchStartX = 0;
     document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
     document.addEventListener('touchend', e => {
         let diff = e.changedTouches[0].screenX - touchStartX;
