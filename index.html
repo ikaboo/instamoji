@@ -29,12 +29,10 @@
             user-select: none;
         }
 
-        /* --- LAYOUT CONTAINERS --- */
-        
-        /* 1. Top Section (Logo & Stars) */
+        /* --- TOP SECTION (Logo Only) --- */
         .top-container {
             position: absolute;
-            top: 5vh;
+            top: 20px;
             width: 100%;
             text-align: center;
             z-index: 10;
@@ -49,16 +47,21 @@
             letter-spacing: 2px;
         }
 
+        /* --- STATUS BAR (Now positioned relative to game screen) --- */
         .status-bar {
+            position: absolute;
+            top: 80px; /* Sits below the logo */
+            width: 100%;
             height: 50px;
             font-size: 3rem;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 10px;
+            z-index: 5;
         }
 
-        /* 2. Main Screen Layout */
+        /* --- SCREENS --- */
         .screen { 
             display: none; 
             height: 100vh; 
@@ -70,8 +73,9 @@
 
         /* Menu Specific */
         #menu-screen {
-            justify-content: center;
-            padding-top: 10vh;
+            justify-content: flex-start;
+            padding-top: 110px; 
+            overflow-y: auto;
         }
 
         .menu-grid { 
@@ -80,11 +84,12 @@
             gap: 15px; 
             width: 85%; 
             max-width: 400px;
+            padding-bottom: 40px;
         }
         
         .cat-card {
             background: white; 
-            padding: 20px 5px; 
+            padding: 15px 5px; 
             border-radius: 20px; 
             font-size: 1.1rem; 
             border: none;
@@ -94,20 +99,19 @@
             color: var(--text-dark);
             text-transform: uppercase;
         }
-        .cat-card span { font-size: 2.5rem; display: block; margin-bottom: 5px; }
+        .cat-card span { font-size: 2.2rem; display: block; margin-bottom: 2px; }
         .random-btn { grid-column: span 2; background: #A855F7; color: white; box-shadow: 0 6px 0 #7e3af2; }
 
-        /* --- GAME ROW (Perfect Alignment) --- */
+        /* --- GAME LAYOUT --- */
         .game-row {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            align-items: center; 
+            justify-content: space-between; 
             width: 95%;
             max-width: 500px;
             flex-grow: 1; 
         }
 
-        /* Arrows */
         .nav-btn {
             font-size: 3.5rem;
             background: none;
@@ -117,19 +121,17 @@
             padding: 0 10px;
             font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
         }
-        
         .nav-btn:active { transform: scale(0.9); }
 
-        /* The Card */
         #game-viewport {
             flex-grow: 1;
-            margin: 0 10px;
+            margin: 0 5px;
             perspective: 1000px;
         }
 
         #game-card {
             background: white;
-            padding: 40px 10px;
+            padding: 30px 10px;
             border-radius: 40px;
             text-align: center;
             box-shadow: 0 12px 0 #e6c841;
@@ -137,8 +139,8 @@
         }
 
         #visual-display {
-            font-size: 140px; 
-            height: 160px;
+            font-size: 130px; 
+            height: 150px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -151,25 +153,29 @@
 
         h2#description { 
             font-family: var(--helvetica);
-            font-size: 2rem; 
+            font-size: 1.8rem; 
             font-weight: bold;
             color: var(--text-dark); 
             margin: 10px 0 0;
             text-transform: uppercase;
         }
 
-        /* 3. Bottom Section */
+        /* Bottom Section */
         .bottom-actions {
-            margin-bottom: 5vh;
+            margin-bottom: 30px;
             display: flex;
             justify-content: center;
+            width: 100%;
+            z-index: 20;
         }
         .small-btn {
             padding: 15px 40px; border: none; border-radius: 20px;
             color: white; font-family: 'Bowlby One SC', sans-serif;
             font-size: 1.2rem;
             box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+            cursor: pointer;
         }
+        .small-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0,0,0,0.2); }
 
         /* Animations */
         .slide-out-left { transform: translateX(-150%) rotate(-10deg); opacity: 0; }
@@ -181,13 +187,14 @@
 
 <div class="top-container">
     <div class="header-logo">INSTAMOJI</div>
-    <div id="star-bar" class="status-bar"></div>
-</div>
+    </div>
 
 <div id="menu-screen" class="screen active">
     <div class="menu-grid">
         <button class="cat-card" onclick="startGame('alphabet')"><span>ABC</span>Alphabet</button>
         <button class="cat-card" onclick="startGame('numbers')"><span>🔢</span>Numbers</button>
+        <button class="cat-card" onclick="startGame('colors')"><span>🎨</span>Colors</button>
+        <button class="cat-card" onclick="startGame('shapes')"><span>🔺</span>Shapes</button>
         <button class="cat-card" onclick="startGame('animals')"><span>🐶</span>Animals</button>
         <button class="cat-card" onclick="startGame('vehicles')"><span>🚀</span>Vroom!</button>
         <button class="cat-card" onclick="startGame('feelings')"><span>🥰</span>Feelings</button>
@@ -197,6 +204,8 @@
 
 <div id="game-screen" class="screen">
     
+    <div id="star-bar" class="status-bar"></div>
+
     <div class="game-row">
         <button class="nav-btn" onclick="prevCard()">◀️</button>
         
@@ -218,21 +227,37 @@
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // Alphabet
     const alphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => ({ 
-        emoji: l, 
-        text: l, 
-        voice: l.toLowerCase() 
+        emoji: l, text: l, voice: l.toLowerCase() 
     }));
 
     const categories = {
         alphabet: alphabetList,
+        colors: [
+            { emoji: "🔴", text: "Red", voice: "Red" },
+            { emoji: "🟠", text: "Orange", voice: "Orange" },
+            { emoji: "🟡", text: "Yellow", voice: "Yellow" },
+            { emoji: "🟢", text: "Green", voice: "Green" },
+            { emoji: "🔵", text: "Blue", voice: "Blue" },
+            { emoji: "🟣", text: "Purple", voice: "Purple" },
+            { emoji: "⚫", text: "Black", voice: "Black" },
+            { emoji: "⚪", text: "White", voice: "White" },
+            { emoji: "🟤", text: "Brown", voice: "Brown" }
+        ],
+        shapes: [
+            { emoji: "🟥", text: "Square", voice: "Square" },
+            { emoji: "🔺", text: "Triangle", voice: "Triangle" },
+            { emoji: "🔴", text: "Circle", voice: "Circle" },
+            { emoji: "⭐", text: "Star", voice: "Star" },
+            { emoji: "🔷", text: "Diamond", voice: "Diamond" },
+            { emoji: "💙", text: "Heart", voice: "Heart" },
+            { emoji: "🛑", text: "Octagon", voice: "Octagon" }
+        ],
         animals: [
             { emoji: "🦁", text: "Lion", voice: "Lion" },
             { emoji: "🐘", text: "Elephant", voice: "Elephant" },
             { emoji: "🦒", text: "Giraffe", voice: "Giraffe" },
             { emoji: "🐸", text: "Frog", voice: "Frog" },
-            // 10 New Animals
             { emoji: "🐶", text: "Dog", voice: "Dog" },
             { emoji: "🐱", text: "Cat", voice: "Cat" },
             { emoji: "🐵", text: "Monkey", voice: "Monkey" },
@@ -261,7 +286,6 @@
             { emoji: "🥳", text: "Party", voice: "Party" },
             { emoji: "😱", text: "Surprise", voice: "Surprise" },
             { emoji: "😂", text: "Silly", voice: "Silly" },
-            // 10 New Feelings
             { emoji: "😊", text: "Happy", voice: "Happy" },
             { emoji: "😢", text: "Sad", voice: "Sad" },
             { emoji: "😠", text: "Angry", voice: "Angry" },
@@ -360,7 +384,419 @@
             spread: 80, 
             origin: { y: 0.5 }, 
             shapes: ['star'], 
-            colors: ['#FFDE59'],
+            colors: ['#5271FF', '#FF5757', '#A855F7', '#FFFFFF'],
+            scalar: 2 
+        });
+        
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance("Wow!");
+        msg.pitch = 1.6;
+        window.speechSynthesis.speak(msg);
+    }
+
+    function speakCurrent() {
+        window.speechSynthesis.cancel();
+        const textToSay = currentGameData[currentIndex].voice;
+        const msg = new SpeechSynthesisUtterance(textToSay);
+        msg.pitch = 1.3;
+        window.speechSynthesis.speak(msg);
+    }
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+    document.addEventListener('touchend', e => {
+        let diff = e.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(diff) > 60) diff > 0 ? prevCard() : nextCard();
+    });
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Instamoji</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&display=swap" rel="stylesheet">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #5271FF;
+            --secondary: #FF5757;
+            --bg: #FFDE59;
+            --text-dark: #333;
+            --helvetica: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: var(--helvetica);
+            background-color: var(--bg);
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+        }
+
+        /* --- TOP SECTION (Logo Only) --- */
+        .top-container {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .header-logo {
+            font-family: 'Bowlby One SC', sans-serif;
+            font-size: 2.5rem;
+            color: white;
+            text-shadow: 4px 4px 0px var(--secondary);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        /* --- STATUS BAR (Now positioned relative to game screen) --- */
+        .status-bar {
+            position: absolute;
+            top: 80px; /* Sits below the logo */
+            width: 100%;
+            height: 50px;
+            font-size: 3rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            z-index: 5;
+        }
+
+        /* --- SCREENS --- */
+        .screen { 
+            display: none; 
+            height: 100vh; 
+            width: 100vw; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        .active { display: flex; }
+
+        /* Menu Specific */
+        #menu-screen {
+            justify-content: flex-start;
+            padding-top: 110px; 
+            overflow-y: auto;
+        }
+
+        .menu-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            width: 85%; 
+            max-width: 400px;
+            padding-bottom: 40px;
+        }
+        
+        .cat-card {
+            background: white; 
+            padding: 15px 5px; 
+            border-radius: 20px; 
+            font-size: 1.1rem; 
+            border: none;
+            box-shadow: 0 6px 0 #d4b840; 
+            cursor: pointer; 
+            font-family: 'Bowlby One SC', sans-serif;
+            color: var(--text-dark);
+            text-transform: uppercase;
+        }
+        .cat-card span { font-size: 2.2rem; display: block; margin-bottom: 2px; }
+        .random-btn { grid-column: span 2; background: #A855F7; color: white; box-shadow: 0 6px 0 #7e3af2; }
+
+        /* --- GAME LAYOUT --- */
+        .game-row {
+            display: flex;
+            align-items: center; 
+            justify-content: space-between; 
+            width: 95%;
+            max-width: 500px;
+            flex-grow: 1; 
+        }
+
+        .nav-btn {
+            font-size: 3.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            filter: drop-shadow(0 4px 0 rgba(0,0,0,0.2));
+            padding: 0 10px;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+        }
+        .nav-btn:active { transform: scale(0.9); }
+
+        #game-viewport {
+            flex-grow: 1;
+            margin: 0 5px;
+            perspective: 1000px;
+        }
+
+        #game-card {
+            background: white;
+            padding: 30px 10px;
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 12px 0 #e6c841;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #visual-display {
+            font-size: 130px; 
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-family: var(--helvetica);
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+        #visual-display:active { transform: scale(1.15); }
+
+        h2#description { 
+            font-family: var(--helvetica);
+            font-size: 1.8rem; 
+            font-weight: bold;
+            color: var(--text-dark); 
+            margin: 10px 0 0;
+            text-transform: uppercase;
+        }
+
+        /* Bottom Section */
+        .bottom-actions {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            z-index: 20;
+        }
+        .small-btn {
+            padding: 15px 40px; border: none; border-radius: 20px;
+            color: white; font-family: 'Bowlby One SC', sans-serif;
+            font-size: 1.2rem;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        .small-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0,0,0,0.2); }
+
+        /* Animations */
+        .slide-out-left { transform: translateX(-150%) rotate(-10deg); opacity: 0; }
+        .slide-out-right { transform: translateX(150%) rotate(10deg); opacity: 0; }
+
+    </style>
+</head>
+<body>
+
+<div class="top-container">
+    <div class="header-logo">INSTAMOJI</div>
+    </div>
+
+<div id="menu-screen" class="screen active">
+    <div class="menu-grid">
+        <button class="cat-card" onclick="startGame('alphabet')"><span>ABC</span>Alphabet</button>
+        <button class="cat-card" onclick="startGame('numbers')"><span>🔢</span>Numbers</button>
+        <button class="cat-card" onclick="startGame('colors')"><span>🎨</span>Colors</button>
+        <button class="cat-card" onclick="startGame('shapes')"><span>🔺</span>Shapes</button>
+        <button class="cat-card" onclick="startGame('animals')"><span>🐶</span>Animals</button>
+        <button class="cat-card" onclick="startGame('vehicles')"><span>🚀</span>Vroom!</button>
+        <button class="cat-card" onclick="startGame('feelings')"><span>🥰</span>Feelings</button>
+        <button class="cat-card random-btn" onclick="startGame('random')"><span>🎲</span>Random Mix</button>
+    </div>
+</div>
+
+<div id="game-screen" class="screen">
+    
+    <div id="star-bar" class="status-bar"></div>
+
+    <div class="game-row">
+        <button class="nav-btn" onclick="prevCard()">◀️</button>
+        
+        <div id="game-viewport">
+            <div id="game-card">
+                <div id="visual-display" onmousedown="handleInteraction()" ontouchstart="handleInteraction()">A</div>
+                <h2 id="description">A</h2>
+            </div>
+        </div>
+
+        <button class="nav-btn" onclick="nextCard()">▶️</button>
+    </div>
+
+    <div class="bottom-actions">
+        <button class="small-btn" style="background:#94a3b8" onclick="goHome()">HOME</button>
+    </div>
+</div>
+
+<script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    const alphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => ({ 
+        emoji: l, text: l, voice: l.toLowerCase() 
+    }));
+
+    const categories = {
+        alphabet: alphabetList,
+        colors: [
+            { emoji: "🔴", text: "Red", voice: "Red" },
+            { emoji: "🟠", text: "Orange", voice: "Orange" },
+            { emoji: "🟡", text: "Yellow", voice: "Yellow" },
+            { emoji: "🟢", text: "Green", voice: "Green" },
+            { emoji: "🔵", text: "Blue", voice: "Blue" },
+            { emoji: "🟣", text: "Purple", voice: "Purple" },
+            { emoji: "⚫", text: "Black", voice: "Black" },
+            { emoji: "⚪", text: "White", voice: "White" },
+            { emoji: "🟤", text: "Brown", voice: "Brown" }
+        ],
+        shapes: [
+            { emoji: "🟥", text: "Square", voice: "Square" },
+            { emoji: "🔺", text: "Triangle", voice: "Triangle" },
+            { emoji: "🔴", text: "Circle", voice: "Circle" },
+            { emoji: "⭐", text: "Star", voice: "Star" },
+            { emoji: "🔷", text: "Diamond", voice: "Diamond" },
+            { emoji: "💙", text: "Heart", voice: "Heart" },
+            { emoji: "🛑", text: "Octagon", voice: "Octagon" }
+        ],
+        animals: [
+            { emoji: "🦁", text: "Lion", voice: "Lion" },
+            { emoji: "🐘", text: "Elephant", voice: "Elephant" },
+            { emoji: "🦒", text: "Giraffe", voice: "Giraffe" },
+            { emoji: "🐸", text: "Frog", voice: "Frog" },
+            { emoji: "🐶", text: "Dog", voice: "Dog" },
+            { emoji: "🐱", text: "Cat", voice: "Cat" },
+            { emoji: "🐵", text: "Monkey", voice: "Monkey" },
+            { emoji: "🐮", text: "Cow", voice: "Cow" },
+            { emoji: "🐷", text: "Pig", voice: "Pig" },
+            { emoji: "🦆", text: "Duck", voice: "Duck" },
+            { emoji: "🐔", text: "Chicken", voice: "Chicken" },
+            { emoji: "🐻", text: "Bear", voice: "Bear" },
+            { emoji: "🐯", text: "Tiger", voice: "Tiger" },
+            { emoji: "🐰", text: "Bunny", voice: "Bunny" }
+        ],
+        vehicles: [
+            { emoji: "🏍️", text: "Motorcycle", voice: "Motorcycle" },
+            { emoji: "🚒", text: "Fire Truck", voice: "Fire truck" },
+            { emoji: "🚂", text: "Train", voice: "Train" },
+            { emoji: "🚐", text: "Van", voice: "Van" },
+            { emoji: "🚑", text: "Ambulance", voice: "Ambulance" },
+            { emoji: "🚕", text: "Taxi", voice: "Taxi" },
+            { emoji: "🚜", text: "Tractor", voice: "Tractor" },
+            { emoji: "🏎️", text: "Race Car", voice: "Race car" },
+            { emoji: "🛑", text: "Stop", voice: "Stop" }
+        ],
+        feelings: [
+            { emoji: "🥰", text: "Loved", voice: "Loved" },
+            { emoji: "❤️", text: "Heart", voice: "Heart" },
+            { emoji: "🥳", text: "Party", voice: "Party" },
+            { emoji: "😱", text: "Surprise", voice: "Surprise" },
+            { emoji: "😂", text: "Silly", voice: "Silly" },
+            { emoji: "😊", text: "Happy", voice: "Happy" },
+            { emoji: "😢", text: "Sad", voice: "Sad" },
+            { emoji: "😠", text: "Angry", voice: "Angry" },
+            { emoji: "😴", text: "Sleepy", voice: "Sleepy" },
+            { emoji: "😎", text: "Cool", voice: "Cool" },
+            { emoji: "🤔", text: "Thinking", voice: "Thinking" },
+            { emoji: "😉", text: "Wink", voice: "Wink" },
+            { emoji: "😨", text: "Scared", voice: "Scared" },
+            { emoji: "🤢", text: "Sick", voice: "Sick" },
+            { emoji: "🤩", text: "Star Struck", voice: "Star Struck" }
+        ],
+        numbers: [
+            ...("0123456789".split("").map(n => ({ emoji: n + "️⃣", text: n, voice: n }))),
+            { emoji: "🔟", text: "10", voice: "10" }
+        ]
+    };
+
+    let currentGameData = [];
+    let currentIndex = 0;
+    let swipeCount = 0;
+
+    function playKnock() {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+    }
+
+    function handleInteraction() { playKnock(); speakCurrent(); }
+
+    function startGame(cat) {
+        if (cat === 'random') {
+            currentGameData = Object.values(categories).flat().sort(() => Math.random() - 0.5);
+        } else {
+            currentGameData = [...categories[cat]];
+        }
+        currentIndex = 0;
+        swipeCount = 0;
+        document.getElementById('star-bar').innerHTML = "";
+        showScreen('game-screen');
+        updateScreen();
+    }
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function goHome() { showScreen('menu-screen'); }
+
+    function updateScreen(direction = 'none') {
+        const card = document.getElementById('game-card');
+        const item = currentGameData[currentIndex];
+        
+        if (direction !== 'none') {
+            card.classList.add(direction === 'next' ? 'slide-out-left' : 'slide-out-right');
+            setTimeout(() => {
+                document.getElementById('visual-display').innerText = item.emoji;
+                document.getElementById('description').innerText = item.text;
+                card.classList.remove('slide-out-left', 'slide-out-right');
+                card.style.transition = 'none';
+                card.style.transform = direction === 'next' ? 'translateX(100%)' : 'translateX(-100%)';
+                setTimeout(() => {
+                    card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.transform = 'translateX(0)';
+                }, 20);
+            }, 300);
+        } else {
+            document.getElementById('visual-display').innerText = item.emoji;
+            document.getElementById('description').innerText = item.text;
+        }
+    }
+
+    function nextCard() {
+        currentIndex = (currentIndex + 1) % currentGameData.length;
+        swipeCount++;
+        if (swipeCount % 5 === 0) triggerMilestone();
+        updateScreen('next');
+    }
+
+    function prevCard() {
+        currentIndex = (currentIndex - 1 + currentGameData.length) % currentGameData.length;
+        updateScreen('prev');
+    }
+
+    function triggerMilestone() {
+        document.getElementById('star-bar').innerHTML += "⭐";
+        confetti({ 
+            particleCount: 120, 
+            spread: 80, 
+            origin: { y: 0.5 }, 
+            shapes: ['star'], 
+            colors: ['#5271FF', '#FF5757', '#A855F7', '#FFFFFF'],
             scalar: 2 
         });
         
