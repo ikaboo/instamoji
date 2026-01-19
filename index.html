@@ -39,7 +39,6 @@
             z-index: 10;
         }
 
-        /* Logo is now clickable */
         .header-logo {
             font-family: 'Bowlby One SC', sans-serif;
             font-size: 2.5rem;
@@ -48,7 +47,7 @@
             margin-bottom: 5px;
             letter-spacing: 2px;
             cursor: pointer;
-            pointer-events: auto; /* Ensures click works */
+            pointer-events: auto;
         }
         .header-logo:active { transform: scale(0.95); }
 
@@ -66,7 +65,6 @@
             margin: 0 auto;
         }
 
-        /* Star Animation Class */
         .star-pop {
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
@@ -113,11 +111,10 @@
         }
         .cat-card span { font-size: 2.2rem; display: block; margin-bottom: 2px; }
         
-        /* Special Buttons */
         .random-btn { grid-column: span 2; background: #A855F7; color: white; box-shadow: 0 6px 0 #7e3af2; }
         .all-btn { grid-column: span 2; background: #22c55e; color: white; box-shadow: 0 6px 0 #16a34a; }
 
-        /* ALL EMOJIS LIST SCREEN */
+        /* ALL EMOJIS SCROLL LIST */
         #all-emojis-screen {
             padding-top: 100px;
             background: var(--bg);
@@ -140,6 +137,7 @@
             justify-content: center;
             font-size: 2rem;
             box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            cursor: pointer;
         }
 
         /* GAME ROW */
@@ -177,7 +175,6 @@
             text-align: center;
             box-shadow: 0 12px 0 #e6c841;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            /* Consistent size to prevent jumping between text/image */
             min-height: 280px; 
             display: flex;
             flex-direction: column;
@@ -185,7 +182,6 @@
             justify-content: center;
         }
 
-        /* Updated Visual Display for Images */
         #visual-display {
             height: 180px;
             width: 180px;
@@ -201,7 +197,6 @@
             object-fit: contain;
         }
         
-        /* Fallback for text based (Alphabet/Numbers) */
         .text-mode {
             font-size: 130px; 
             font-family: var(--helvetica);
@@ -290,24 +285,20 @@
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // --- DATA & CONTENT ---
-
-    // Function to generate Noto Animation URL
-    // We use the hex code of the emoji
+    // --- HELPER: ROBUST GIF URL GENERATOR ---
     function getAnimUrl(emojiChar) {
-        // Convert emoji to code point hex (e.g. 🦁 -> 1f981)
-        const codePoints = Array.from(emojiChar).map(c => c.codePointAt(0).toString(16));
-        // Handle joiners/variants if necessary, but Noto Animation usually simple hex
-        // We will try simple join for complex emojis, or just first CP for simple ones.
-        // The library typically uses the full sequence joined by underscore or just the main one.
-        // Using a reliable raw git path for the GIF version
-        let hex = codePoints.join('_');
-        
-        // Manual overrides for known complex filenames if needed, otherwise default:
+        // 1. Convert to code points
+        // 2. Filter out 'fe0f' (Variation Selector-16) which breaks Noto links
+        const codePoints = Array.from(emojiChar)
+            .map(c => c.codePointAt(0))
+            .filter(cp => cp !== 0xfe0f) // FIX: Remove VS16
+            .map(cp => cp.toString(16));
+            
+        const hex = codePoints.join('_');
         return `https://raw.githubusercontent.com/googlefonts/noto-emoji-animation/main/gifs/${hex}.gif`;
     }
 
-    // Alphabet & Numbers (Static Text Mode)
+    // --- DATA ---
     const alphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => ({ 
         type: 'text', content: l, text: l, voice: l.toLowerCase() 
     }));
@@ -317,7 +308,6 @@
         { type: 'text', content: "10", text: "10", voice: "10" }
     ];
 
-    // Helper for Emoji Items
     function e(emoji, text, voice) {
         return { type: 'emoji', content: emoji, text: text, voice: voice || text };
     }
@@ -331,7 +321,8 @@
             e("🍉", "Watermelon"), e("🍓", "Strawberry"), e("🍒", "Cherries"),
             e("🥦", "Broccoli"), e("🥕", "Carrot"), e("🌽", "Corn"),
             e("🍕", "Pizza"), e("🍔", "Burger"), e("🍟", "Fries"),
-            e("🍦", "Ice Cream"), e("🍩", "Donut"), e("🍪", "Cookie")
+            e("🍦", "Ice Cream"), e("🍩", "Donut"), e("🍪", "Cookie"),
+            e("🥑", "Avocado"), e("🍍", "Pineapple"), e("🥝", "Kiwi")
         ],
 
         colors: [
@@ -356,7 +347,7 @@
         ],
 
         vehicles: [
-            // Note: Start order is enforced in logic
+            // Start order enforced in logic
             e("🚒", "Fire Truck"), e("🚂", "Train"),
             e("🏍️", "Motorcycle"), e("🚐", "Van"), e("🚑", "Ambulance"),
             e("🚕", "Taxi"), e("🚜", "Tractor"), e("🏎️", "Race Car"),
@@ -368,10 +359,9 @@
             e("🥰", "Loved"), e("🥳", "Party"), e("😱", "Surprise"),
             e("😂", "Silly"), e("😊", "Happy"), e("😎", "Cool"),
             e("🤔", "Thinking"), e("😉", "Wink"), e("🤩", "Star Struck"),
-            // Negative/State
             e("😢", "Sad"), e("😠", "Angry"), e("😴", "Sleepy"),
             e("🤢", "Sick"), e("😨", "Scared"), e("😐", "Bored"),
-            e("🤧", "Sneezing"), e("🤕", "Ouch")
+            e("🤧", "Sneezing"), e("🤕", "Ouch"), e("😭", "Crying")
         ]
     };
 
@@ -381,7 +371,6 @@
     let starsCollected = 0;
 
     // --- AUDIO & INTERACTION ---
-
     function playKnock() {
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
@@ -397,8 +386,6 @@
 
     function handleInteraction() {
         playKnock(); 
-        
-        // If it's an image, reload src to restart animation
         const visual = document.getElementById('visual-display');
         const img = visual.querySelector('img');
         if (img) {
@@ -406,34 +393,43 @@
             img.src = "";
             img.src = currentSrc;
         }
-
         speakCurrent();
     }
 
-    // --- GAME LOGIC ---
+    // --- LOGIC ---
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
 
     function startGame(cat) {
         let items = [];
         
         if (cat === 'random') {
-            items = Object.values(categories).flat().sort(() => Math.random() - 0.5);
+            items = Object.values(categories).flat();
+            shuffleArray(items);
+            
+            // LOGIC: Never start with text (letter/number). 
+            // Shuffle until first item is emoji type.
+            while (items[0].type === 'text') {
+                shuffleArray(items);
+            }
+            
         } else if (cat === 'vehicles') {
-            // Vroom Logic: Fire Truck -> Train -> Random Rest
             const allVehicles = [...categories.vehicles];
             const fire = allVehicles.find(i => i.text === "Fire Truck");
             const train = allVehicles.find(i => i.text === "Train");
             const others = allVehicles.filter(i => i.text !== "Fire Truck" && i.text !== "Train");
             
-            items = [fire, train, ...others.sort(() => Math.random() - 0.5)];
+            items = [fire, train, ...shuffleArray(others)];
+            
         } else {
-            // Randomize others within category
-            if (cat === 'alphabet' || cat === 'numbers') {
-                items = [...categories[cat]]; // Keep ABC/123 order usually? User said "random within category".
-                // Let's randomize ABC/Numbers too based on prompt "when click category emojis are shown randomly"
-                items.sort(() => Math.random() - 0.5);
-            } else {
-                items = [...categories[cat]].sort(() => Math.random() - 0.5);
-            }
+            // Logic: Randomize ALL categories (including Alphabet/Numbers)
+            items = [...categories[cat]];
+            shuffleArray(items);
         }
         
         currentGameData = items;
@@ -452,14 +448,17 @@
     function showAllEmojis() {
         const list = document.getElementById('full-list');
         list.innerHTML = "";
-        const all = Object.values(categories).flat();
+        // Sort for list view? Or category order? Let's do category groups
+        const all = [
+            ...categories.animals, ...categories.vehicles, ...categories.food,
+            ...categories.feelings, ...categories.shapes, ...categories.colors
+        ];
         
         all.forEach(item => {
             const div = document.createElement('div');
             div.className = 'list-item';
-            div.innerText = item.type === 'emoji' ? item.content : item.content;
+            div.innerText = item.content;
             div.onclick = () => {
-                // Quick play sound on click in list
                 const msg = new SpeechSynthesisUtterance(item.voice);
                 window.speechSynthesis.speak(msg);
             };
@@ -488,12 +487,10 @@
         
         const renderItem = () => {
             if (item.type === 'emoji') {
-                // Use Animated GIF
                 const animUrl = getAnimUrl(item.content);
                 visual.innerHTML = `<img src="${animUrl}" alt="${item.text}">`;
-                visual.className = ""; // remove text-mode class
+                visual.className = "";
             } else {
-                // Text Mode (ABC/123)
                 visual.innerHTML = item.content;
                 visual.className = "text-mode";
             }
@@ -539,18 +536,15 @@
         starsCollected++;
         const starBar = document.getElementById('star-bar');
         
-        // Star Limit 8
         if (starsCollected > 8) {
             starsCollected = 1;
             starBar.innerHTML = "";
         }
         
-        // Create Star Element
         const starSpan = document.createElement('span');
         starSpan.innerText = "⭐";
         starSpan.className = "star-pop";
         starSpan.onclick = function() {
-            // Animate on click (handled by CSS active class mostly, but we can add logic)
             this.style.transform = "scale(1.5) rotate(20deg)";
             setTimeout(() => { this.style.transform = "scale(1) rotate(0deg)"; }, 200);
         };
