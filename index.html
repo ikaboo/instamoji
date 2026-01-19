@@ -9,6 +9,8 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
@@ -109,9 +111,16 @@
             position: relative;
         }
         
+        /* Static Image */
         #visual-display img {
             width: 100%; height: 100%; object-fit: contain;
             display: none; 
+        }
+
+        /* Lottie Container */
+        #lottie-container {
+            width: 100%; height: 100%;
+            display: none; /* Hidden until clicked */
         }
         
         .fallback-emoji {
@@ -123,7 +132,7 @@
             font-size: 130px; font-family: var(--helvetica); font-weight: bold; color: var(--text-dark);
         }
 
-        #visual-display:active { transform: scale(1.15); }
+        #visual-display:active { transform: scale(1.05); }
 
         h2#description { 
             font-family: var(--helvetica); font-size: 1.8rem; font-weight: bold; 
@@ -181,6 +190,7 @@
             <div id="game-card">
                 <div id="visual-display" onmousedown="handleInteraction()" ontouchstart="handleInteraction()">
                     <img id="main-image" src="" alt="emoji" onerror="useFallback()">
+                    <div id="lottie-container"></div>
                     <div id="main-fallback" class="fallback-emoji"></div>
                 </div>
                 <h2 id="description"></h2>
@@ -197,13 +207,10 @@
 
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    // --- UPDATED HEX GENERATOR FOR GOOGLE FONTS CDN ---
+    let currentAnim = null; // Stores the Lottie instance
+
+    // --- HEX GENERATOR ---
     function getHex(emoji) {
-        // This CDN usually wants simple hex codes. 
-        // 1. Convert to code points
-        // 2. Filter out VS16 (fe0f)
-        // 3. Join with underscores
         return Array.from(emoji)
             .map(c => c.codePointAt(0))
             .filter(cp => cp !== 0xfe0f)
@@ -211,15 +218,15 @@
             .join('_');
     }
 
-    // --- NEW URLS (Google Fonts CDN) ---
+    // --- URL GENERATORS ---
     const BASE_URL = "https://fonts.gstatic.com/s/e/notoemoji/latest";
 
     function getStaticUrl(emoji) {
         return `${BASE_URL}/${getHex(emoji)}/512.png`;
     }
 
-    function getAnimUrl(emoji) {
-        return `${BASE_URL}/${getHex(emoji)}/512.gif`;
+    function getLottieUrl(emoji) {
+        return `${BASE_URL}/${getHex(emoji)}/lottie.json`;
     }
 
     // --- DATA ---
@@ -286,10 +293,8 @@
     let currentIndex = 0;
     let swipeCount = 0;
     let starsCollected = 0;
-    let animTimeout = null;
 
     // --- GAME LOGIC ---
-
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -303,20 +308,16 @@
         if (cat === 'random') {
             items = Object.values(categories).flat();
             shuffleArray(items);
-            while (items[0].type === 'text') {
-                shuffleArray(items);
-            }
+            while (items[0].type === 'text') { shuffleArray(items); }
         } else if (cat === 'vehicles') {
-            const allVehicles = [...categories.vehicles];
-            const fire = allVehicles.find(i => i.text === "Fire Truck");
-            const train = allVehicles.find(i => i.text === "Train");
-            const others = allVehicles.filter(i => i.text !== "Fire Truck" && i.text !== "Train");
+            const all = [...categories.vehicles];
+            const fire = all.find(i => i.text === "Fire Truck");
+            const train = all.find(i => i.text === "Train");
+            const others = all.filter(i => i.text !== "Fire Truck" && i.text !== "Train");
             items = [fire, train, ...shuffleArray(others)];
         } else {
             items = [...categories[cat]];
-            if (cat !== 'alphabet' && cat !== 'numbers') {
-                 shuffleArray(items);
-            }
+            if (cat !== 'alphabet' && cat !== 'numbers') shuffleArray(items);
         }
         
         currentGameData = items;
@@ -356,22 +357,28 @@
     function updateScreen(direction = 'none') {
         const card = document.getElementById('game-card');
         const img = document.getElementById('main-image');
+        const lottieContainer = document.getElementById('lottie-container');
         const fallback = document.getElementById('main-fallback');
         const desc = document.getElementById('description');
         const item = currentGameData[currentIndex];
 
         // Reset display state
         img.style.display = 'none';
+        lottieContainer.style.display = 'none';
         fallback.style.display = 'none';
+        
+        // Destroy previous animation if exists
+        if (currentAnim) {
+            currentAnim.destroy();
+            currentAnim = null;
+        }
 
         const renderItem = () => {
             if (item.type === 'emoji') {
-                // LOAD STATIC IMAGE (PNG)
                 img.src = getStaticUrl(item.content);
                 img.style.display = 'block';
                 fallback.innerText = item.content; 
             } else {
-                // TEXT MODE
                 fallback.innerText = item.content;
                 fallback.style.display = 'block';
             }
@@ -417,21 +424,32 @@
         osc.connect(gain); gain.connect(audioCtx.destination);
         osc.start(); osc.stop(audioCtx.currentTime + 0.1);
 
-        // Animation Swap
+        // Lottie Animation
         if (item.type === 'emoji') {
             const img = document.getElementById('main-image');
-            const animSrc = getAnimUrl(item.content);
-            const staticSrc = getStaticUrl(item.content);
+            const lottieContainer = document.getElementById('lottie-container');
             
-            // Switch to GIF
-            img.src = animSrc;
+            // Hide static, show lottie
+            img.style.display = 'none';
+            lottieContainer.style.display = 'block';
+            
+            if (currentAnim) currentAnim.destroy();
 
-            if (animTimeout) clearTimeout(animTimeout);
-            
-            // Switch back to PNG after 3s
-            animTimeout = setTimeout(() => {
-                img.src = staticSrc;
-            }, 3000);
+            currentAnim = lottie.loadAnimation({
+                container: lottieContainer,
+                renderer: 'svg',
+                loop: false,
+                autoplay: true,
+                path: getLottieUrl(item.content)
+            });
+
+            // On finish, swap back
+            currentAnim.addEventListener('complete', () => {
+                lottieContainer.style.display = 'none';
+                img.style.display = 'block';
+                currentAnim.destroy();
+                currentAnim = null;
+            });
         }
 
         // Voice
