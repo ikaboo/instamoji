@@ -89,6 +89,7 @@
         .nav-btn {
             font-size: 3.5rem; background: none; border: none; cursor: pointer; 
             filter: drop-shadow(0 4px 0 rgba(0,0,0,0.2)); padding: 0 10px; z-index: 50;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
         }
         .nav-btn:active { transform: scale(0.9); }
 
@@ -102,24 +103,24 @@
             align-items: center; justify-content: center;
         }
 
-        /* Container for the image/emoji */
         #visual-display {
             height: 180px; width: 180px; display: flex; 
             align-items: center; justify-content: center; cursor: pointer;
             position: relative;
         }
         
-        /* The Image Element */
         #visual-display img {
             width: 100%; height: 100%; object-fit: contain;
-            display: none; /* Hidden until loaded */
+            display: none; 
         }
         
-        /* Fallback Text */
         .fallback-emoji {
             font-size: 130px; line-height: 130px;
             font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
             display: none;
+        }
+        .text-mode {
+            font-size: 130px; font-family: var(--helvetica); font-weight: bold; color: var(--text-dark);
         }
 
         #visual-display:active { transform: scale(1.15); }
@@ -197,29 +198,28 @@
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // --- ROBUST HEX GENERATOR ---
-    // Calculates clean hex codes for filenames
+    // --- UPDATED HEX GENERATOR FOR GOOGLE FONTS CDN ---
     function getHex(emoji) {
+        // This CDN usually wants simple hex codes. 
+        // 1. Convert to code points
+        // 2. Filter out VS16 (fe0f)
+        // 3. Join with underscores
         return Array.from(emoji)
             .map(c => c.codePointAt(0))
-            .filter(cp => cp !== 0xfe0f) // Remove Variation Selector
+            .filter(cp => cp !== 0xfe0f)
             .map(cp => cp.toString(16))
             .join('_');
     }
 
-    // --- URL GENERATORS ---
-    // 1. Static PNG from Noto Emoji repo (requires 'emoji_u' prefix usually)
+    // --- NEW URLS (Google Fonts CDN) ---
+    const BASE_URL = "https://fonts.gstatic.com/s/e/notoemoji/latest";
+
     function getStaticUrl(emoji) {
-        const hex = getHex(emoji);
-        // Noto static uses "emoji_u" prefix + underscores
-        return `https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/128/emoji_u${hex}.png`;
+        return `${BASE_URL}/${getHex(emoji)}/512.png`;
     }
 
-    // 2. Animated GIF from Noto Animation repo (raw hex)
     function getAnimUrl(emoji) {
-        const hex = getHex(emoji);
-        // Animation repo uses raw hex
-        return `https://raw.githubusercontent.com/googlefonts/noto-emoji-animation/main/gifs/${hex}.gif`;
+        return `${BASE_URL}/${getHex(emoji)}/512.gif`;
     }
 
     // --- DATA ---
@@ -303,7 +303,6 @@
         if (cat === 'random') {
             items = Object.values(categories).flat();
             shuffleArray(items);
-            // Ensure first item is emoji, not text
             while (items[0].type === 'text') {
                 shuffleArray(items);
             }
@@ -367,10 +366,10 @@
 
         const renderItem = () => {
             if (item.type === 'emoji') {
-                // LOAD STATIC IMAGE INITIALLY
+                // LOAD STATIC IMAGE (PNG)
                 img.src = getStaticUrl(item.content);
                 img.style.display = 'block';
-                fallback.innerText = item.content; // Prepare fallback
+                fallback.innerText = item.content; 
             } else {
                 // TEXT MODE
                 fallback.innerText = item.content;
@@ -398,7 +397,6 @@
 
     // --- INTERACTION ---
 
-    // Called if the image fails to load
     function useFallback() {
         document.getElementById('main-image').style.display = 'none';
         document.getElementById('main-fallback').style.display = 'block';
@@ -407,7 +405,7 @@
     function handleInteraction() {
         const item = currentGameData[currentIndex];
         
-        // 1. Play Sound
+        // Sound
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -419,25 +417,24 @@
         osc.connect(gain); gain.connect(audioCtx.destination);
         osc.start(); osc.stop(audioCtx.currentTime + 0.1);
 
-        // 2. Play Animation (if emoji)
+        // Animation Swap
         if (item.type === 'emoji') {
             const img = document.getElementById('main-image');
             const animSrc = getAnimUrl(item.content);
             const staticSrc = getStaticUrl(item.content);
             
-            // Swap to GIF
+            // Switch to GIF
             img.src = animSrc;
 
-            // Reset timeout if user clicks multiple times
             if (animTimeout) clearTimeout(animTimeout);
-
-            // Revert to Static after 3 seconds
+            
+            // Switch back to PNG after 3s
             animTimeout = setTimeout(() => {
                 img.src = staticSrc;
             }, 3000);
         }
 
-        // 3. Speak
+        // Voice
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(item.voice);
         msg.pitch = 1.3;
