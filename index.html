@@ -73,7 +73,7 @@
         .emoji-list-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 90%; max-width: 500px; padding-bottom: 100px; }
         .list-item { background: white; border-radius: 15px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 4px 0 rgba(0,0,0,0.1); cursor: pointer; }
 
-        /* GAME */
+        /* GAME ROW */
         .game-row { display: flex; align-items: center; justify-content: space-between; width: 95%; max-width: 500px; flex-grow: 1; }
         .nav-btn { font-size: 3.5rem; background: none; border: none; cursor: pointer; filter: drop-shadow(0 4px 0 rgba(0,0,0,0.2)); padding: 0 10px; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"; z-index: 50; }
         .nav-btn:active { transform: scale(0.9); }
@@ -158,20 +158,6 @@
 
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    // --- URL GENERATOR (FIXED) ---
-    function getAnimUrl(emojiChar) {
-        // Convert to hex code point. Noto uses lowercase.
-        const codePoints = Array.from(emojiChar)
-            .map(c => c.codePointAt(0))
-            .filter(cp => cp !== 0xfe0f) // Remove Variation Selector 16
-            .map(cp => cp.toString(16));
-        
-        const hex = codePoints.join('_');
-        
-        // Use OFFICIAL Google Fonts CDN (Stable)
-        return `https://fonts.gstatic.com/s/e/notoemoji/latest/${hex}/512.gif`;
-    }
 
     // --- DATA ---
     const alphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => ({ 
@@ -267,23 +253,40 @@
         const visual = document.getElementById('visual-display');
 
         // Logic: Swaps the Text Emoji for the GIF on click
+        // If GIF fails, it tries PNG. If PNG fails, it stays Text.
         if (item.type === 'emoji' && !visual.querySelector('img')) {
-            const animUrl = getAnimUrl(item.content);
+            const hex = Array.from(item.content)
+                .map(c => c.codePointAt(0))
+                .filter(cp => cp !== 0xfe0f)
+                .map(cp => cp.toString(16))
+                .join('_');
+
+            const animUrl = `https://fonts.gstatic.com/s/e/notoemoji/latest/${hex}/512.gif`;
+            const staticUrl = `https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u${hex}.png`;
+
             const img = new Image();
-            img.src = animUrl;
+            img.src = animUrl; 
             img.alt = item.text;
             
-            // ERROR SAFETY: If GIF fails to load, do nothing (keep static emoji)
-            img.onerror = function() {
-                console.log("Animation not found for:", item.text);
-            };
-
-            // SUCCESS: Replace static emoji with GIF
+            // 1. Success (GIF)
             img.onload = function() {
                 visual.innerHTML = "";
                 visual.appendChild(img);
                 visual.className = "";
             };
+
+            // 2. Failure (GIF) -> Try PNG
+            img.onerror = function() {
+                console.log("Animation missing, trying static for:", item.text);
+                this.onerror = null; // Prevent loop
+                this.src = staticUrl;
+            };
+        } else if (visual.querySelector('img')) {
+            // If image exists, reload it to restart animation
+            const img = visual.querySelector('img');
+            const src = img.src;
+            img.src = "";
+            img.src = src;
         }
     }
 
