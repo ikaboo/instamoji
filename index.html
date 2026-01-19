@@ -1,239 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Instamoji</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&display=swap" rel="stylesheet">
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-    <style>
-        :root {
-            --primary: #5271FF;
-            --secondary: #FF5757;
-            --bg: #FFDE59;
-            --text-dark: #333;
-            --helvetica: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            margin: 0; padding: 0;
-            font-family: var(--helvetica);
-            background-color: var(--bg);
-            overflow: hidden;
-            touch-action: none;
-            user-select: none;
-        }
-
-        .top-container {
-            position: absolute; top: 20px; width: 100%; text-align: center; z-index: 10;
-        }
-
-        .header-logo {
-            font-family: 'Bowlby One SC', sans-serif; font-size: 2.5rem; color: white;
-            text-shadow: 4px 4px 0px var(--secondary); margin-bottom: 5px; letter-spacing: 2px;
-            cursor: pointer; pointer-events: auto;
-        }
-        .header-logo:active { transform: scale(0.95); }
-
-        .status-bar {
-            height: auto; min-height: 50px; font-size: 3rem; display: none; 
-            justify-content: center; align-items: center; gap: 10px;
-            flex-wrap: wrap; max-width: 320px; margin: 0 auto;
-        }
-        .star-pop { transition: transform 0.2s; cursor: pointer; }
-        .star-pop:active { transform: scale(1.6) rotate(15deg); }
-
-        .screen { display: none; height: 100vh; width: 100vw; flex-direction: column; align-items: center; }
-        .active { display: flex; }
-
-        #menu-screen {
-            justify-content: flex-start; padding-top: 110px; overflow-y: auto; -webkit-overflow-scrolling: touch;
-        }
-
-        .menu-grid { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; 
-            width: 85%; max-width: 400px; padding-bottom: 40px;
-        }
-        
-        .cat-card {
-            background: white; padding: 15px 5px; border-radius: 20px; font-size: 1.1rem; 
-            border: none; box-shadow: 0 6px 0 #d4b840; cursor: pointer; 
-            font-family: 'Bowlby One SC', sans-serif; color: var(--text-dark); text-transform: uppercase;
-        }
-        .cat-card span { font-size: 2.2rem; display: block; margin-bottom: 2px; }
-        
-        .random-btn { grid-column: span 2; background: #A855F7; color: white; box-shadow: 0 6px 0 #7e3af2; }
-        .all-btn { grid-column: span 2; background: #22c55e; color: white; box-shadow: 0 6px 0 #16a34a; }
-
-        #all-emojis-screen { padding-top: 100px; background: var(--bg); overflow-y: auto; }
-        .emoji-list-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; 
-            width: 90%; max-width: 500px; padding-bottom: 100px;
-        }
-        .list-item {
-            background: white; border-radius: 15px; aspect-ratio: 1; display: flex; 
-            align-items: center; justify-content: center; font-size: 2rem; 
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1); cursor: pointer;
-        }
-
-        .game-row {
-            display: flex; align-items: center; justify-content: space-between; 
-            width: 95%; max-width: 500px; flex-grow: 1; 
-        }
-
-        .nav-btn {
-            font-size: 3.5rem; background: none; border: none; cursor: pointer; 
-            filter: drop-shadow(0 4px 0 rgba(0,0,0,0.2)); padding: 0 10px; z-index: 50;
-            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
-        }
-        .nav-btn:active { transform: scale(0.9); }
-
-        #game-viewport { flex-grow: 1; margin: 0 5px; perspective: 1000px; }
-
-        #game-card {
-            background: white; padding: 20px 10px; border-radius: 40px; 
-            text-align: center; box-shadow: 0 12px 0 #e6c841; 
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            min-height: 280px; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center;
-        }
-
-        #visual-display {
-            height: 180px; width: 180px; display: flex; 
-            align-items: center; justify-content: center; cursor: pointer;
-            position: relative;
-        }
-        
-        /* Static Image */
-        #visual-display img {
-            width: 100%; height: 100%; object-fit: contain;
-            display: none; 
-        }
-
-        /* Lottie Container */
-        #lottie-container {
-            width: 100%; height: 100%;
-            display: none; /* Hidden until clicked */
-        }
-        
-        .fallback-emoji {
-            font-size: 130px; line-height: 130px;
-            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
-            display: none;
-        }
-        .text-mode {
-            font-size: 130px; font-family: var(--helvetica); font-weight: bold; color: var(--text-dark);
-        }
-
-        #visual-display:active { transform: scale(1.05); }
-
-        h2#description { 
-            font-family: var(--helvetica); font-size: 1.8rem; font-weight: bold; 
-            color: var(--text-dark); margin: 20px 0 0; text-transform: uppercase;
-        }
-
-        .bottom-actions {
-            position: fixed; bottom: 30px; display: flex; justify-content: center; width: 100%; z-index: 100;
-        }
-        .small-btn {
-            padding: 15px 40px; border: none; border-radius: 20px; 
-            background: #A855F7; color: white; font-family: 'Bowlby One SC', sans-serif; 
-            font-size: 1.2rem; box-shadow: 0 6px 0 rgba(0,0,0,0.2); cursor: pointer;
-        }
-        .small-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0,0,0,0.2); }
-
-        .slide-out-left { transform: translateX(-150%) rotate(-10deg); opacity: 0; }
-        .slide-out-right { transform: translateX(150%) rotate(10deg); opacity: 0; }
-    </style>
-</head>
-<body>
-
-<div class="top-container">
-    <div class="header-logo" onclick="goHome()">INSTAMOJI</div>
-    <div id="star-bar" class="status-bar"></div>
-</div>
-
-<div id="menu-screen" class="screen active">
-    <div class="menu-grid">
-        <button class="cat-card" onclick="startGame('alphabet')"><span>ABC</span>Alphabet</button>
-        <button class="cat-card" onclick="startGame('numbers')"><span>🔢</span>Numbers</button>
-        <button class="cat-card" onclick="startGame('food')"><span>🍌</span>Food</button>
-        <button class="cat-card" onclick="startGame('colors')"><span>🎨</span>Colors</button>
-        <button class="cat-card" onclick="startGame('shapes')"><span>❤️</span>Shapes</button>
-        <button class="cat-card" onclick="startGame('animals')"><span>🐶</span>Animals</button>
-        <button class="cat-card" onclick="startGame('vehicles')"><span>🚒</span>Vroom!</button>
-        <button class="cat-card" onclick="startGame('feelings')"><span>🥰</span>Feelings</button>
-        <button class="cat-card random-btn" onclick="startGame('random')"><span>🎲</span>Random Mix</button>
-        <button class="cat-card all-btn" onclick="showAllEmojis()"><span>🥳</span>All Emojis</button>
-    </div>
-</div>
-
-<div id="all-emojis-screen" class="screen">
-    <div id="full-list" class="emoji-list-grid"></div>
-    <div class="bottom-actions">
-        <button class="small-btn" onclick="goHome()">BACK</button>
-    </div>
-</div>
-
-<div id="game-screen" class="screen">
-    <div class="game-row">
-        <button class="nav-btn" onclick="prevCard()">◀️</button>
-        
-        <div id="game-viewport">
-            <div id="game-card">
-                <div id="visual-display" onmousedown="handleInteraction()" ontouchstart="handleInteraction()">
-                    <img id="main-image" src="" alt="emoji" onerror="useFallback()">
-                    <div id="lottie-container"></div>
-                    <div id="main-fallback" class="fallback-emoji"></div>
-                </div>
-                <h2 id="description"></h2>
-            </div>
-        </div>
-
-        <button class="nav-btn" onclick="nextCard()">▶️</button>
-    </div>
-
-    <div class="bottom-actions">
-        <button class="small-btn" onclick="goHome()">HOME</button>
-    </div>
-</div>
-
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    let currentAnim = null; // Stores the Lottie instance
-
-    // --- HEX GENERATOR ---
-    function getHex(emoji) {
-        return Array.from(emoji)
+    
+    // --- 1. ROBUST ANIMATION URL GENERATOR ---
+    function getAnimUrl(emojiChar) {
+        // Convert emoji to code points (hex), removing the "hidden" variation selector (fe0f)
+        // that often breaks links.
+        const codePoints = Array.from(emojiChar)
             .map(c => c.codePointAt(0))
-            .filter(cp => cp !== 0xfe0f)
-            .map(cp => cp.toString(16))
-            .join('_');
+            .filter(cp => cp !== 0xfe0f) 
+            .map(cp => cp.toString(16));
+            
+        const hex = codePoints.join('_');
+        // Base URL for the animations
+        return `https://raw.githubusercontent.com/googlefonts/noto-emoji-animation/main/gifs/${hex}.gif`;
     }
 
-    // --- URL GENERATORS ---
-    const BASE_URL = "https://fonts.gstatic.com/s/e/notoemoji/latest";
-
-    function getStaticUrl(emoji) {
-        return `${BASE_URL}/${getHex(emoji)}/512.png`;
+    // --- 2. FISHER-YATES SHUFFLE (True Random) ---
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
     }
 
-    function getLottieUrl(emoji) {
-        return `${BASE_URL}/${getHex(emoji)}/lottie.json`;
-    }
-
-    // --- DATA ---
-    function e(emoji, text, voice) {
-        return { type: 'emoji', content: emoji, text: text, voice: voice || text };
-    }
-
+    // --- DATA HELPERS ---
     const alphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => ({ 
         type: 'text', content: l, text: l, voice: l.toLowerCase() 
     }));
@@ -243,28 +34,37 @@
         { type: 'text', content: "10", text: "10", voice: "10" }
     ];
 
+    function e(emoji, text, voice) {
+        return { type: 'emoji', content: emoji, text: text, voice: voice || text };
+    }
+
     const categories = {
         alphabet: alphabetList,
         numbers: numbersList,
+        
         food: [
             e("🍎", "Apple"), e("🍌", "Banana"), e("🍇", "Grapes"),
             e("🍉", "Watermelon"), e("🍓", "Strawberry"), e("🍒", "Cherries"),
             e("🥦", "Broccoli"), e("🥕", "Carrot"), e("🌽", "Corn"),
             e("🍕", "Pizza"), e("🍔", "Burger"), e("🍟", "Fries"),
             e("🍦", "Ice Cream"), e("🍩", "Donut"), e("🍪", "Cookie"),
-            e("🥑", "Avocado"), e("🍍", "Pineapple"), e("🥝", "Kiwi")
+            e("🥑", "Avocado"), e("🍍", "Pineapple"), e("🥝", "Kiwi"),
+            e("🥞", "Pancakes"), e("🥨", "Pretzel"), e("🧀", "Cheese")
         ],
+
         colors: [
             e("🔴", "Red"), e("🟠", "Orange"), e("🟡", "Yellow"),
             e("🟢", "Green"), e("🔵", "Blue"), e("🟣", "Purple"),
             e("⚫", "Black"), e("⚪", "White"), e("🟤", "Brown")
         ],
+
         shapes: [
             e("🟥", "Square"), e("🔺", "Triangle"), e("🔴", "Circle"),
             e("⭐", "Star"), e("🔷", "Diamond"), e("🛑", "Octagon"),
             e("❤️", "Red Heart"), e("💙", "Blue Heart"), e("💚", "Green Heart"),
             e("💛", "Yellow Heart"), e("💜", "Purple Heart"), e("🧡", "Orange Heart")
         ],
+
         animals: [
             e("🦁", "Lion"), e("🐘", "Elephant"), e("🦒", "Giraffe"), e("🐸", "Frog"),
             e("🐶", "Dog"), e("🐱", "Cat"), e("🐵", "Monkey"), e("🐮", "Cow"),
@@ -272,6 +72,7 @@
             e("🐯", "Tiger"), e("🐰", "Bunny"), e("🐼", "Panda"), e("🐨", "Koala"),
             e("🦊", "Fox"), e("🦓", "Zebra"), e("🐢", "Turtle")
         ],
+
         vehicles: [
             e("🚒", "Fire Truck"), e("🚂", "Train"),
             e("🏍️", "Motorcycle"), e("🚐", "Van"), e("🚑", "Ambulance"),
@@ -279,6 +80,7 @@
             e("🛑", "Stop"), e("🚓", "Police Car"), e("🚌", "Bus"),
             e("✈️", "Airplane"), e("🚁", "Helicopter"), e("🛥️", "Boat")
         ],
+
         feelings: [
             e("🥰", "Loved"), e("🥳", "Party"), e("😱", "Surprise"),
             e("😂", "Silly"), e("😊", "Happy"), e("😎", "Cool"),
@@ -294,30 +96,60 @@
     let swipeCount = 0;
     let starsCollected = 0;
 
-    // --- GAME LOGIC ---
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
+    // --- AUDIO & INTERACTION ---
+    function playKnock() {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
     }
+
+    function handleInteraction() {
+        playKnock(); 
+        // Restart GIF animation by reloading source if it's an image
+        const visual = document.getElementById('visual-display');
+        const img = visual.querySelector('img');
+        if (img) {
+            const currentSrc = img.src;
+            img.src = "";
+            img.src = currentSrc;
+        }
+        speakCurrent();
+    }
+
+    // --- GAME LOGIC ---
 
     function startGame(cat) {
         let items = [];
+        
         if (cat === 'random') {
             items = Object.values(categories).flat();
             shuffleArray(items);
-            while (items[0].type === 'text') { shuffleArray(items); }
+            
+            // Logic: Shuffle until the first item is NOT text (so we start with an emoji)
+            while (items[0].type === 'text') {
+                shuffleArray(items);
+            }
+            
         } else if (cat === 'vehicles') {
-            const all = [...categories.vehicles];
-            const fire = all.find(i => i.text === "Fire Truck");
-            const train = all.find(i => i.text === "Train");
-            const others = all.filter(i => i.text !== "Fire Truck" && i.text !== "Train");
+            // Vroom Logic: Fire Truck -> Train -> Random Rest
+            const allVehicles = [...categories.vehicles];
+            const fire = allVehicles.find(i => i.text === "Fire Truck");
+            const train = allVehicles.find(i => i.text === "Train");
+            const others = allVehicles.filter(i => i.text !== "Fire Truck" && i.text !== "Train");
+            
             items = [fire, train, ...shuffleArray(others)];
+            
         } else {
+            // Randomize everything else immediately
             items = [...categories[cat]];
-            if (cat !== 'alphabet' && cat !== 'numbers') shuffleArray(items);
+            shuffleArray(items);
         }
         
         currentGameData = items;
@@ -340,6 +172,7 @@
             ...categories.animals, ...categories.vehicles, ...categories.food,
             ...categories.feelings, ...categories.shapes, ...categories.colors
         ];
+        
         all.forEach(item => {
             const div = document.createElement('div');
             div.className = 'list-item';
@@ -350,37 +183,37 @@
             };
             list.appendChild(div);
         });
+        
         showScreen('all-emojis-screen');
         document.getElementById('star-bar').style.display = 'none';
     }
 
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function goHome() { 
+        document.getElementById('star-bar').style.display = 'none';
+        showScreen('menu-screen'); 
+    }
+
     function updateScreen(direction = 'none') {
         const card = document.getElementById('game-card');
-        const img = document.getElementById('main-image');
-        const lottieContainer = document.getElementById('lottie-container');
-        const fallback = document.getElementById('main-fallback');
+        const visual = document.getElementById('visual-display');
         const desc = document.getElementById('description');
         const item = currentGameData[currentIndex];
-
-        // Reset display state
-        img.style.display = 'none';
-        lottieContainer.style.display = 'none';
-        fallback.style.display = 'none';
         
-        // Destroy previous animation if exists
-        if (currentAnim) {
-            currentAnim.destroy();
-            currentAnim = null;
-        }
-
         const renderItem = () => {
             if (item.type === 'emoji') {
-                img.src = getStaticUrl(item.content);
-                img.style.display = 'block';
-                fallback.innerText = item.content; 
+                const animUrl = getAnimUrl(item.content);
+                // THE FIX: onerror handler added below
+                // If animation fails, replace with the native emoji text immediately
+                visual.innerHTML = `<img src="${animUrl}" alt="${item.text}" onerror="this.parentElement.innerHTML='${item.content}'; this.parentElement.className='text-mode'">`;
+                visual.className = "";
             } else {
-                fallback.innerText = item.content;
-                fallback.style.display = 'block';
+                visual.innerHTML = item.content;
+                visual.className = "text-mode";
             }
             desc.innerText = item.text;
         };
@@ -402,88 +235,33 @@
         }
     }
 
-    // --- INTERACTION ---
-
-    function useFallback() {
-        document.getElementById('main-image').style.display = 'none';
-        document.getElementById('main-fallback').style.display = 'block';
-    }
-
-    function handleInteraction() {
-        const item = currentGameData[currentIndex];
-        
-        // Sound
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(160, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-
-        // Lottie Animation
-        if (item.type === 'emoji') {
-            const img = document.getElementById('main-image');
-            const lottieContainer = document.getElementById('lottie-container');
-            
-            // Hide static, show lottie
-            img.style.display = 'none';
-            lottieContainer.style.display = 'block';
-            
-            if (currentAnim) currentAnim.destroy();
-
-            currentAnim = lottie.loadAnimation({
-                container: lottieContainer,
-                renderer: 'svg',
-                loop: false,
-                autoplay: true,
-                path: getLottieUrl(item.content)
-            });
-
-            // On finish, swap back
-            currentAnim.addEventListener('complete', () => {
-                lottieContainer.style.display = 'none';
-                img.style.display = 'block';
-                currentAnim.destroy();
-                currentAnim = null;
-            });
-        }
-
-        // Voice
-        window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance(item.voice);
-        msg.pitch = 1.3;
-        window.speechSynthesis.speak(msg);
-    }
-
     function nextCard() {
         currentIndex = (currentIndex + 1) % currentGameData.length;
         swipeCount++;
         updateScreen('next');
-        if (swipeCount % 5 === 0) triggerMilestone();
-        else setTimeout(() => autoSpeak(), 300);
+
+        if (swipeCount % 5 === 0) {
+            triggerMilestone();
+        } else {
+            setTimeout(() => speakCurrent(), 300);
+        }
     }
 
     function prevCard() {
         currentIndex = (currentIndex - 1 + currentGameData.length) % currentGameData.length;
         updateScreen('prev');
-        setTimeout(() => autoSpeak(), 300);
-    }
-
-    function autoSpeak() {
-        window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance(currentGameData[currentIndex].voice);
-        msg.pitch = 1.3;
-        window.speechSynthesis.speak(msg);
+        setTimeout(() => speakCurrent(), 300);
     }
 
     function triggerMilestone() {
         starsCollected++;
         const starBar = document.getElementById('star-bar');
-        if (starsCollected > 8) { starsCollected = 1; starBar.innerHTML = ""; }
+        
+        if (starsCollected > 8) {
+            starsCollected = 1;
+            starBar.innerHTML = "";
+        }
+        
         const starSpan = document.createElement('span');
         starSpan.innerText = "⭐";
         starSpan.className = "star-pop";
@@ -492,21 +270,32 @@
             setTimeout(() => { this.style.transform = "scale(1) rotate(0deg)"; }, 200);
         };
         starBar.appendChild(starSpan);
-        confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 }, shapes: ['star'], colors: ['#5271FF', '#FF5757', '#A855F7', '#FFFFFF'], scalar: 2 });
+
+        confetti({ 
+            particleCount: 120, spread: 80, origin: { y: 0.5 }, 
+            shapes: ['star'], 
+            colors: ['#5271FF', '#FF5757', '#A855F7', '#FFFFFF'],
+            scalar: 2 
+        });
+        
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance("Great job!");
         msg.pitch = 1.6;
         window.speechSynthesis.speak(msg);
     }
 
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+    function speakCurrent() {
+        window.speechSynthesis.cancel();
+        const textToSay = currentGameData[currentIndex].voice;
+        const msg = new SpeechSynthesisUtterance(textToSay);
+        msg.pitch = 1.3;
+        window.speechSynthesis.speak(msg);
     }
-    function goHome() { 
-        document.getElementById('star-bar').style.display = 'none';
-        showScreen('menu-screen'); 
-    }
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+    document.addEventListener('touchend', e => {
+        let diff = e.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(diff) > 60) diff > 0 ? prevCard() : nextCard();
+    });
 </script>
-</body>
-</html>
