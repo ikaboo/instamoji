@@ -29,6 +29,8 @@
             user-select: none;
         }
 
+        /* --- LAYOUT --- */
+        
         .top-container {
             position: absolute; top: 20px; width: 100%; text-align: center; z-index: 10;
         }
@@ -52,6 +54,7 @@
         .screen { display: none; height: 100vh; width: 100vw; flex-direction: column; align-items: center; }
         .active { display: flex; }
 
+        /* MENU */
         #menu-screen { justify-content: flex-start; padding-top: 110px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 85%; max-width: 400px; padding-bottom: 40px; }
         
@@ -65,10 +68,12 @@
         .random-btn { grid-column: span 2; background: #A855F7; color: white; box-shadow: 0 6px 0 #7e3af2; }
         .all-btn { grid-column: span 2; background: #22c55e; color: white; box-shadow: 0 6px 0 #16a34a; }
 
+        /* ALL EMOJIS LIST */
         #all-emojis-screen { padding-top: 100px; background: var(--bg); overflow-y: auto; }
         .emoji-list-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 90%; max-width: 500px; padding-bottom: 100px; }
         .list-item { background: white; border-radius: 15px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 4px 0 rgba(0,0,0,0.1); cursor: pointer; }
 
+        /* GAME */
         .game-row { display: flex; align-items: center; justify-content: space-between; width: 95%; max-width: 500px; flex-grow: 1; }
         .nav-btn { font-size: 3.5rem; background: none; border: none; cursor: pointer; filter: drop-shadow(0 4px 0 rgba(0,0,0,0.2)); padding: 0 10px; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji"; z-index: 50; }
         .nav-btn:active { transform: scale(0.9); }
@@ -83,6 +88,7 @@
         #visual-display { height: 180px; width: 180px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         #visual-display img { width: 100%; height: 100%; object-fit: contain; }
         
+        /* The default view (System Emoji) */
         .system-emoji {
             font-size: 130px; 
             font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
@@ -126,35 +132,45 @@
 
 <div id="all-emojis-screen" class="screen">
     <div id="full-list" class="emoji-list-grid"></div>
-    <div class="bottom-actions"><button class="small-btn" onclick="goHome()">BACK</button></div>
+    <div class="bottom-actions">
+        <button class="small-btn" onclick="goHome()">BACK</button>
+    </div>
 </div>
 
 <div id="game-screen" class="screen">
     <div class="game-row">
         <button class="nav-btn" onclick="prevCard()">◀️</button>
+        
         <div id="game-viewport">
             <div id="game-card">
                 <div id="visual-display" onmousedown="handleInteraction()" ontouchstart="handleInteraction()"></div>
                 <h2 id="description"></h2>
             </div>
         </div>
+
         <button class="nav-btn" onclick="nextCard()">▶️</button>
     </div>
-    <div class="bottom-actions"><button class="small-btn" onclick="goHome()">HOME</button></div>
+
+    <div class="bottom-actions">
+        <button class="small-btn" onclick="goHome()">HOME</button>
+    </div>
 </div>
 
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // --- URL GENERATOR ---
+    // --- URL GENERATOR (FIXED) ---
     function getAnimUrl(emojiChar) {
-        // Convert to hex code point. Noto uses lowercase, underscore separator.
+        // Convert to hex code point. Noto uses lowercase.
         const codePoints = Array.from(emojiChar)
             .map(c => c.codePointAt(0))
             .filter(cp => cp !== 0xfe0f) // Remove Variation Selector 16
             .map(cp => cp.toString(16));
+        
         const hex = codePoints.join('_');
-        return `https://raw.githubusercontent.com/googlefonts/noto-emoji-animation/main/gifs/${hex}.gif`;
+        
+        // Use OFFICIAL Google Fonts CDN (Stable)
+        return `https://fonts.gstatic.com/s/e/notoemoji/latest/${hex}/512.gif`;
     }
 
     // --- DATA ---
@@ -257,12 +273,17 @@
             img.src = animUrl;
             img.alt = item.text;
             
+            // ERROR SAFETY: If GIF fails to load, do nothing (keep static emoji)
+            img.onerror = function() {
+                console.log("Animation not found for:", item.text);
+            };
+
+            // SUCCESS: Replace static emoji with GIF
             img.onload = function() {
                 visual.innerHTML = "";
                 visual.appendChild(img);
                 visual.className = "";
             };
-            // If error (GIF not found), we simply do nothing and keep the System Emoji visible
         }
     }
 
