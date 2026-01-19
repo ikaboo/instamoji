@@ -7,9 +7,6 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&display=swap" rel="stylesheet">
     
-    <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/fire-truck.png">
-    <link rel="icon" type="image/png" href="https://img.icons8.com/color/96/fire-truck.png">
-
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -34,7 +31,6 @@
 
         /* --- LAYOUT CONTAINERS --- */
         
-        /* 1. Top Section (Logo & Stars) */
         .top-container {
             position: absolute;
             top: 20px;
@@ -43,30 +39,40 @@
             z-index: 10;
         }
 
+        /* Logo is now clickable */
         .header-logo {
             font-family: 'Bowlby One SC', sans-serif;
             font-size: 2.5rem;
             color: white;
             text-shadow: 4px 4px 0px var(--secondary);
-            margin-bottom: 0px;
+            margin-bottom: 5px;
             letter-spacing: 2px;
+            cursor: pointer;
+            pointer-events: auto; /* Ensures click works */
         }
+        .header-logo:active { transform: scale(0.95); }
 
-        /* STATUS BAR (Wraps lines) */
+        /* STATUS BAR */
         .status-bar {
             height: auto;
-            min-height: 50px; 
+            min-height: 50px;
             font-size: 3rem;
             display: none; 
             justify-content: center;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap; 
-            max-width: 300px; 
-            margin: 0 auto;   
+            max-width: 320px;
+            margin: 0 auto;
         }
 
-        /* 2. Main Screen Layout */
+        /* Star Animation Class */
+        .star-pop {
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        .star-pop:active { transform: scale(1.6) rotate(15deg); }
+
         .screen { 
             display: none; 
             height: 100vh; 
@@ -76,11 +82,12 @@
         }
         .active { display: flex; }
 
-        /* Menu Specific */
+        /* MENU SCREEN */
         #menu-screen {
             justify-content: flex-start;
             padding-top: 110px; 
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .menu-grid { 
@@ -105,9 +112,37 @@
             text-transform: uppercase;
         }
         .cat-card span { font-size: 2.2rem; display: block; margin-bottom: 2px; }
+        
+        /* Special Buttons */
         .random-btn { grid-column: span 2; background: #A855F7; color: white; box-shadow: 0 6px 0 #7e3af2; }
+        .all-btn { grid-column: span 2; background: #22c55e; color: white; box-shadow: 0 6px 0 #16a34a; }
 
-        /* --- GAME ROW --- */
+        /* ALL EMOJIS LIST SCREEN */
+        #all-emojis-screen {
+            padding-top: 100px;
+            background: var(--bg);
+            overflow-y: auto;
+        }
+        .emoji-list-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            width: 90%;
+            max-width: 500px;
+            padding-bottom: 100px;
+        }
+        .list-item {
+            background: white;
+            border-radius: 15px;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+        }
+
+        /* GAME ROW */
         .game-row {
             display: flex;
             align-items: center;
@@ -117,7 +152,6 @@
             flex-grow: 1; 
         }
 
-        /* Arrows */
         .nav-btn {
             font-size: 3.5rem;
             background: none;
@@ -126,10 +160,10 @@
             filter: drop-shadow(0 4px 0 rgba(0,0,0,0.2));
             padding: 0 10px;
             font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+            z-index: 50;
         }
         .nav-btn:active { transform: scale(0.9); }
 
-        /* The Card */
         #game-viewport {
             flex-grow: 1;
             margin: 0 5px;
@@ -138,24 +172,43 @@
 
         #game-card {
             background: white;
-            padding: 30px 10px;
+            padding: 20px 10px;
             border-radius: 40px;
             text-align: center;
             box-shadow: 0 12px 0 #e6c841;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Consistent size to prevent jumping between text/image */
+            min-height: 280px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
+        /* Updated Visual Display for Images */
         #visual-display {
-            font-size: 130px; 
-            height: 150px;
+            height: 180px;
+            width: 180px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+        }
+        
+        #visual-display img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        /* Fallback for text based (Alphabet/Numbers) */
+        .text-mode {
+            font-size: 130px; 
             font-family: var(--helvetica);
             font-weight: bold;
             color: var(--text-dark);
         }
+
         #visual-display:active { transform: scale(1.15); }
 
         h2#description { 
@@ -163,24 +216,20 @@
             font-size: 1.8rem; 
             font-weight: bold;
             color: var(--text-dark); 
-            margin: 10px 0 0;
+            margin: 20px 0 0;
             text-transform: uppercase;
         }
 
-        /* 3. Bottom Section (Home Button) */
         .bottom-actions {
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            z-index: 20;
+            position: fixed; bottom: 30px;
+            display: flex; justify-content: center; width: 100%; z-index: 100;
         }
+        
         .small-btn {
             padding: 15px 40px; border: none; border-radius: 20px;
-            color: white; font-family: 'Bowlby One SC', sans-serif;
-            font-size: 1.2rem;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
-            cursor: pointer;
+            background: #A855F7; color: white;
+            font-family: 'Bowlby One SC', sans-serif; font-size: 1.2rem;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.2); cursor: pointer;
         }
         .small-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0,0,0,0.2); }
 
@@ -193,7 +242,7 @@
 <body>
 
 <div class="top-container">
-    <div class="header-logo">INSTAMOJI</div>
+    <div class="header-logo" onclick="goHome()">INSTAMOJI</div>
     <div id="star-bar" class="status-bar"></div>
 </div>
 
@@ -208,18 +257,25 @@
         <button class="cat-card" onclick="startGame('vehicles')"><span>🚒</span>Vroom!</button>
         <button class="cat-card" onclick="startGame('feelings')"><span>🥰</span>Feelings</button>
         <button class="cat-card random-btn" onclick="startGame('random')"><span>🎲</span>Random Mix</button>
+        <button class="cat-card all-btn" onclick="showAllEmojis()"><span>🥳</span>All Emojis</button>
+    </div>
+</div>
+
+<div id="all-emojis-screen" class="screen">
+    <div id="full-list" class="emoji-list-grid"></div>
+    <div class="bottom-actions">
+        <button class="small-btn" onclick="goHome()">BACK</button>
     </div>
 </div>
 
 <div id="game-screen" class="screen">
-    
     <div class="game-row">
         <button class="nav-btn" onclick="prevCard()">◀️</button>
         
         <div id="game-viewport">
             <div id="game-card">
-                <div id="visual-display" onmousedown="handleInteraction()" ontouchstart="handleInteraction()">A</div>
-                <h2 id="description">A</h2>
+                <div id="visual-display" onmousedown="handleInteraction()" ontouchstart="handleInteraction()"></div>
+                <h2 id="description"></h2>
             </div>
         </div>
 
@@ -227,98 +283,95 @@
     </div>
 
     <div class="bottom-actions">
-        <button class="small-btn" style="background:#94a3b8" onclick="goHome()">HOME</button>
+        <button class="small-btn" onclick="goHome()">HOME</button>
     </div>
 </div>
 
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
+    // --- DATA & CONTENT ---
+
+    // Function to generate Noto Animation URL
+    // We use the hex code of the emoji
+    function getAnimUrl(emojiChar) {
+        // Convert emoji to code point hex (e.g. 🦁 -> 1f981)
+        const codePoints = Array.from(emojiChar).map(c => c.codePointAt(0).toString(16));
+        // Handle joiners/variants if necessary, but Noto Animation usually simple hex
+        // We will try simple join for complex emojis, or just first CP for simple ones.
+        // The library typically uses the full sequence joined by underscore or just the main one.
+        // Using a reliable raw git path for the GIF version
+        let hex = codePoints.join('_');
+        
+        // Manual overrides for known complex filenames if needed, otherwise default:
+        return `https://raw.githubusercontent.com/googlefonts/noto-emoji-animation/main/gifs/${hex}.gif`;
+    }
+
+    // Alphabet & Numbers (Static Text Mode)
     const alphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => ({ 
-        emoji: l, text: l, voice: l.toLowerCase() 
+        type: 'text', content: l, text: l, voice: l.toLowerCase() 
     }));
+
+    const numbersList = [
+        ...("0123456789".split("").map(n => ({ type: 'text', content: n, text: n, voice: n }))),
+        { type: 'text', content: "10", text: "10", voice: "10" }
+    ];
+
+    // Helper for Emoji Items
+    function e(emoji, text, voice) {
+        return { type: 'emoji', content: emoji, text: text, voice: voice || text };
+    }
 
     const categories = {
         alphabet: alphabetList,
+        numbers: numbersList,
+        
         food: [
-            { emoji: "🍎", text: "Apple", voice: "Apple" },
-            { emoji: "🍌", text: "Banana", voice: "Banana" },
-            { emoji: "🍇", text: "Grapes", voice: "Grapes" },
-            { emoji: "🍕", text: "Pizza", voice: "Pizza" },
-            { emoji: "🍦", text: "Ice Cream", voice: "Ice Cream" },
-            { emoji: "🍩", text: "Donut", voice: "Donut" },
-            { emoji: "🍪", text: "Cookie", voice: "Cookie" },
-            { emoji: "🥦", text: "Broccoli", voice: "Broccoli" },
-            { emoji: "🥕", text: "Carrot", voice: "Carrot" },
-            { emoji: "🍔", text: "Burger", voice: "Burger" }
+            e("🍎", "Apple"), e("🍌", "Banana"), e("🍇", "Grapes"),
+            e("🍉", "Watermelon"), e("🍓", "Strawberry"), e("🍒", "Cherries"),
+            e("🥦", "Broccoli"), e("🥕", "Carrot"), e("🌽", "Corn"),
+            e("🍕", "Pizza"), e("🍔", "Burger"), e("🍟", "Fries"),
+            e("🍦", "Ice Cream"), e("🍩", "Donut"), e("🍪", "Cookie")
         ],
+
         colors: [
-            { emoji: "🔴", text: "Red", voice: "Red" },
-            { emoji: "🟠", text: "Orange", voice: "Orange" },
-            { emoji: "🟡", text: "Yellow", voice: "Yellow" },
-            { emoji: "🟢", text: "Green", voice: "Green" },
-            { emoji: "🔵", text: "Blue", voice: "Blue" },
-            { emoji: "🟣", text: "Purple", voice: "Purple" },
-            { emoji: "⚫", text: "Black", voice: "Black" },
-            { emoji: "⚪", text: "White", voice: "White" },
-            { emoji: "🟤", text: "Brown", voice: "Brown" }
+            e("🔴", "Red"), e("🟠", "Orange"), e("🟡", "Yellow"),
+            e("🟢", "Green"), e("🔵", "Blue"), e("🟣", "Purple"),
+            e("⚫", "Black"), e("⚪", "White"), e("🟤", "Brown")
         ],
+
         shapes: [
-            { emoji: "🟥", text: "Square", voice: "Square" },
-            { emoji: "🔺", text: "Triangle", voice: "Triangle" },
-            { emoji: "🔴", text: "Circle", voice: "Circle" },
-            { emoji: "⭐", text: "Star", voice: "Star" },
-            { emoji: "🔷", text: "Diamond", voice: "Diamond" },
-            { emoji: "❤️", text: "Heart", voice: "Heart" },
-            { emoji: "🛑", text: "Octagon", voice: "Octagon" }
+            e("🟥", "Square"), e("🔺", "Triangle"), e("🔴", "Circle"),
+            e("⭐", "Star"), e("🔷", "Diamond"), e("🛑", "Octagon"),
+            e("❤️", "Red Heart"), e("💙", "Blue Heart"), e("💚", "Green Heart"),
+            e("💛", "Yellow Heart"), e("💜", "Purple Heart"), e("🧡", "Orange Heart")
         ],
+
         animals: [
-            { emoji: "🦁", text: "Lion", voice: "Lion" },
-            { emoji: "🐘", text: "Elephant", voice: "Elephant" },
-            { emoji: "🦒", text: "Giraffe", voice: "Giraffe" },
-            { emoji: "🐸", text: "Frog", voice: "Frog" },
-            { emoji: "🐶", text: "Dog", voice: "Dog" },
-            { emoji: "🐱", text: "Cat", voice: "Cat" },
-            { emoji: "🐵", text: "Monkey", voice: "Monkey" },
-            { emoji: "🐮", text: "Cow", voice: "Cow" },
-            { emoji: "🐷", text: "Pig", voice: "Pig" },
-            { emoji: "🦆", text: "Duck", voice: "Duck" },
-            { emoji: "🐔", text: "Chicken", voice: "Chicken" },
-            { emoji: "🐻", text: "Bear", voice: "Bear" },
-            { emoji: "🐯", text: "Tiger", voice: "Tiger" },
-            { emoji: "🐰", text: "Bunny", voice: "Bunny" }
+            e("🦁", "Lion"), e("🐘", "Elephant"), e("🦒", "Giraffe"), e("🐸", "Frog"),
+            e("🐶", "Dog"), e("🐱", "Cat"), e("🐵", "Monkey"), e("🐮", "Cow"),
+            e("🐷", "Pig"), e("🦆", "Duck"), e("🐔", "Chicken"), e("🐻", "Bear"),
+            e("🐯", "Tiger"), e("🐰", "Bunny"), e("🐼", "Panda"), e("🐨", "Koala"),
+            e("🦊", "Fox"), e("🦓", "Zebra"), e("🐢", "Turtle")
         ],
+
         vehicles: [
-            { emoji: "🏍️", text: "Motorcycle", voice: "Motorcycle" },
-            { emoji: "🚒", text: "Fire Truck", voice: "Fire truck" },
-            { emoji: "🚂", text: "Train", voice: "Train" },
-            { emoji: "🚐", text: "Van", voice: "Van" },
-            { emoji: "🚑", text: "Ambulance", voice: "Ambulance" },
-            { emoji: "🚕", text: "Taxi", voice: "Taxi" },
-            { emoji: "🚜", text: "Tractor", voice: "Tractor" },
-            { emoji: "🏎️", text: "Race Car", voice: "Race car" },
-            { emoji: "🛑", text: "Stop", voice: "Stop" }
+            // Note: Start order is enforced in logic
+            e("🚒", "Fire Truck"), e("🚂", "Train"),
+            e("🏍️", "Motorcycle"), e("🚐", "Van"), e("🚑", "Ambulance"),
+            e("🚕", "Taxi"), e("🚜", "Tractor"), e("🏎️", "Race Car"),
+            e("🛑", "Stop"), e("🚓", "Police Car"), e("🚌", "Bus"),
+            e("✈️", "Airplane"), e("🚁", "Helicopter"), e("🛥️", "Boat")
         ],
+
         feelings: [
-            { emoji: "🥰", text: "Loved", voice: "Loved" },
-            { emoji: "❤️", text: "Heart", voice: "Heart" },
-            { emoji: "🥳", text: "Party", voice: "Party" },
-            { emoji: "😱", text: "Surprise", voice: "Surprise" },
-            { emoji: "😂", text: "Silly", voice: "Silly" },
-            { emoji: "😊", text: "Happy", voice: "Happy" },
-            { emoji: "😢", text: "Sad", voice: "Sad" },
-            { emoji: "😠", text: "Angry", voice: "Angry" },
-            { emoji: "😴", text: "Sleepy", voice: "Sleepy" },
-            { emoji: "😎", text: "Cool", voice: "Cool" },
-            { emoji: "🤔", text: "Thinking", voice: "Thinking" },
-            { emoji: "😉", text: "Wink", voice: "Wink" },
-            { emoji: "😨", text: "Scared", voice: "Scared" },
-            { emoji: "🤢", text: "Sick", voice: "Sick" },
-            { emoji: "🤩", text: "Star Struck", voice: "Star Struck" }
-        ],
-        numbers: [
-            ...("0123456789".split("").map(n => ({ emoji: n + "️⃣", text: n, voice: n }))),
-            { emoji: "🔟", text: "10", voice: "10" }
+            e("🥰", "Loved"), e("🥳", "Party"), e("😱", "Surprise"),
+            e("😂", "Silly"), e("😊", "Happy"), e("😎", "Cool"),
+            e("🤔", "Thinking"), e("😉", "Wink"), e("🤩", "Star Struck"),
+            // Negative/State
+            e("😢", "Sad"), e("😠", "Angry"), e("😴", "Sleepy"),
+            e("🤢", "Sick"), e("😨", "Scared"), e("😐", "Bored"),
+            e("🤧", "Sneezing"), e("🤕", "Ouch")
         ]
     };
 
@@ -326,6 +379,8 @@
     let currentIndex = 0;
     let swipeCount = 0;
     let starsCollected = 0;
+
+    // --- AUDIO & INTERACTION ---
 
     function playKnock() {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -340,25 +395,79 @@
         osc.start(); osc.stop(audioCtx.currentTime + 0.1);
     }
 
-    function handleInteraction() { playKnock(); speakCurrent(); }
+    function handleInteraction() {
+        playKnock(); 
+        
+        // If it's an image, reload src to restart animation
+        const visual = document.getElementById('visual-display');
+        const img = visual.querySelector('img');
+        if (img) {
+            const currentSrc = img.src;
+            img.src = "";
+            img.src = currentSrc;
+        }
+
+        speakCurrent();
+    }
+
+    // --- GAME LOGIC ---
 
     function startGame(cat) {
+        let items = [];
+        
         if (cat === 'random') {
-            currentGameData = Object.values(categories).flat().sort(() => Math.random() - 0.5);
+            items = Object.values(categories).flat().sort(() => Math.random() - 0.5);
+        } else if (cat === 'vehicles') {
+            // Vroom Logic: Fire Truck -> Train -> Random Rest
+            const allVehicles = [...categories.vehicles];
+            const fire = allVehicles.find(i => i.text === "Fire Truck");
+            const train = allVehicles.find(i => i.text === "Train");
+            const others = allVehicles.filter(i => i.text !== "Fire Truck" && i.text !== "Train");
+            
+            items = [fire, train, ...others.sort(() => Math.random() - 0.5)];
         } else {
-            currentGameData = [...categories[cat]];
+            // Randomize others within category
+            if (cat === 'alphabet' || cat === 'numbers') {
+                items = [...categories[cat]]; // Keep ABC/123 order usually? User said "random within category".
+                // Let's randomize ABC/Numbers too based on prompt "when click category emojis are shown randomly"
+                items.sort(() => Math.random() - 0.5);
+            } else {
+                items = [...categories[cat]].sort(() => Math.random() - 0.5);
+            }
         }
+        
+        currentGameData = items;
         currentIndex = 0;
         swipeCount = 0;
         starsCollected = 0;
         
-        // Hide/Clear stars initially
         const starBar = document.getElementById('star-bar');
         starBar.innerHTML = "";
-        starBar.style.display = 'flex'; // Show only when playing
+        starBar.style.display = 'flex';
         
         showScreen('game-screen');
         updateScreen();
+    }
+
+    function showAllEmojis() {
+        const list = document.getElementById('full-list');
+        list.innerHTML = "";
+        const all = Object.values(categories).flat();
+        
+        all.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.innerText = item.type === 'emoji' ? item.content : item.content;
+            div.onclick = () => {
+                // Quick play sound on click in list
+                const msg = new SpeechSynthesisUtterance(item.voice);
+                window.speechSynthesis.speak(msg);
+            };
+            list.appendChild(div);
+        });
+        
+        showScreen('all-emojis-screen');
+        document.getElementById('star-bar').style.display = 'none';
     }
 
     function showScreen(id) {
@@ -367,19 +476,34 @@
     }
 
     function goHome() { 
-        document.getElementById('star-bar').style.display = 'none'; // Hide stars in menu
+        document.getElementById('star-bar').style.display = 'none';
         showScreen('menu-screen'); 
     }
 
     function updateScreen(direction = 'none') {
         const card = document.getElementById('game-card');
+        const visual = document.getElementById('visual-display');
+        const desc = document.getElementById('description');
         const item = currentGameData[currentIndex];
         
+        const renderItem = () => {
+            if (item.type === 'emoji') {
+                // Use Animated GIF
+                const animUrl = getAnimUrl(item.content);
+                visual.innerHTML = `<img src="${animUrl}" alt="${item.text}">`;
+                visual.className = ""; // remove text-mode class
+            } else {
+                // Text Mode (ABC/123)
+                visual.innerHTML = item.content;
+                visual.className = "text-mode";
+            }
+            desc.innerText = item.text;
+        };
+
         if (direction !== 'none') {
             card.classList.add(direction === 'next' ? 'slide-out-left' : 'slide-out-right');
             setTimeout(() => {
-                document.getElementById('visual-display').innerText = item.emoji;
-                document.getElementById('description').innerText = item.text;
+                renderItem();
                 card.classList.remove('slide-out-left', 'slide-out-right');
                 card.style.transition = 'none';
                 card.style.transform = direction === 'next' ? 'translateX(100%)' : 'translateX(-100%)';
@@ -389,8 +513,7 @@
                 }, 20);
             }, 300);
         } else {
-            document.getElementById('visual-display').innerText = item.emoji;
-            document.getElementById('description').innerText = item.text;
+            renderItem();
         }
     }
 
@@ -416,18 +539,25 @@
         starsCollected++;
         const starBar = document.getElementById('star-bar');
         
-        if (starsCollected > 10) {
-            // Reset after 10
+        // Star Limit 8
+        if (starsCollected > 8) {
             starsCollected = 1;
-            starBar.innerHTML = "⭐";
-        } else {
-            starBar.innerHTML += "⭐";
+            starBar.innerHTML = "";
         }
+        
+        // Create Star Element
+        const starSpan = document.createElement('span');
+        starSpan.innerText = "⭐";
+        starSpan.className = "star-pop";
+        starSpan.onclick = function() {
+            // Animate on click (handled by CSS active class mostly, but we can add logic)
+            this.style.transform = "scale(1.5) rotate(20deg)";
+            setTimeout(() => { this.style.transform = "scale(1) rotate(0deg)"; }, 200);
+        };
+        starBar.appendChild(starSpan);
 
         confetti({ 
-            particleCount: 120, 
-            spread: 80, 
-            origin: { y: 0.5 }, 
+            particleCount: 120, spread: 80, origin: { y: 0.5 }, 
             shapes: ['star'], 
             colors: ['#5271FF', '#FF5757', '#A855F7', '#FFFFFF'],
             scalar: 2 
