@@ -376,7 +376,7 @@ const TAP_THRESHOLD = 12;          // px movement below this = tap
 
 function onSwipeStart(e) {
     if (!document.getElementById('game-screen').classList.contains('active')) return;
-    if (e.target.closest('.nav-btn') || e.target.closest('.small-btn')) return;
+    if (e.target.closest('.nav-btn') || e.target.closest('.small-btn') || e.target.closest('.star-pop')) return;
 
     const touch = e.changedTouches[0];
     isDragging = true;
