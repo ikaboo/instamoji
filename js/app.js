@@ -360,16 +360,147 @@ function triggerMilestone() {
     speak(UI[currentLang].greatJob);
 }
 
-// --- SWIPE ---
+// --- SWIPE (Physics-based, card follows finger) ---
 
-let touchStartX = 0;
-document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
-document.addEventListener('touchend', e => {
-    const diff = e.changedTouches[0].screenX - touchStartX;
-    if (Math.abs(diff) > 60) {
-        diff > 0 ? prevCard() : nextCard();
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let dragStartTime = 0;
+let dragCurrentX = 0;
+let dragLocked = false;
+let isSwiping = false;
+
+const VELOCITY_THRESHOLD = 0.3;    // px/ms to trigger fling
+const DISTANCE_FRACTION = 0.25;    // fraction of viewport to trigger fling
+const TAP_THRESHOLD = 12;          // px movement below this = tap
+
+function onSwipeStart(e) {
+    if (!document.getElementById('game-screen').classList.contains('active')) return;
+    if (e.target.closest('.nav-btn') || e.target.closest('.small-btn')) return;
+
+    const touch = e.changedTouches[0];
+    isDragging = true;
+    isSwiping = false;
+    dragLocked = false;
+    dragStartX = touch.clientX;
+    dragStartY = touch.clientY;
+    dragCurrentX = 0;
+    dragStartTime = Date.now();
+
+    const card = document.getElementById('game-card');
+    card.style.transition = 'none';
+}
+
+function onSwipeMove(e) {
+    if (!isDragging) return;
+
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - dragStartX;
+    const dy = touch.clientY - dragStartY;
+
+    // Lock direction after initial movement
+    if (!dragLocked && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+        if (Math.abs(dy) > Math.abs(dx)) {
+            isDragging = false;
+            return;
+        }
+        dragLocked = true;
     }
-});
+
+    if (!dragLocked) return;
+
+    isSwiping = true;
+    dragCurrentX = dx;
+
+    const card = document.getElementById('game-card');
+    const rotation = Math.max(-15, Math.min(15, dx * 0.06));
+    card.style.transform = 'translateX(' + dx + 'px) rotate(' + rotation + 'deg)';
+
+    e.preventDefault();
+}
+
+function onSwipeEnd(e) {
+    if (!isDragging) return;
+    isDragging = false;
+
+    const dx = dragCurrentX;
+    const dt = Math.max(1, Date.now() - dragStartTime);
+    const velocity = Math.abs(dx) / dt;
+    const vw = window.innerWidth;
+    const card = document.getElementById('game-card');
+
+    // Tap: barely moved
+    if (Math.abs(dx) < TAP_THRESHOLD) {
+        card.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        card.style.transform = 'translateX(0) rotate(0deg)';
+
+        // If tapped on the emoji area, trigger interaction
+        const touch = e.changedTouches[0];
+        const el = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (el && (el.id === 'visual-display' || el.closest('#visual-display'))) {
+            handleInteraction();
+        }
+        isSwiping = false;
+        return;
+    }
+
+    const shouldFling = velocity > VELOCITY_THRESHOLD || Math.abs(dx) > vw * DISTANCE_FRACTION;
+
+    if (shouldFling) {
+        const dir = dx > 0 ? 1 : -1;
+        const exitX = dir * (vw + 100);
+
+        // Fling off
+        card.style.transition = 'transform 0.2s ease-out';
+        card.style.transform = 'translateX(' + exitX + 'px) rotate(' + (dir * 20) + 'deg)';
+
+        setTimeout(function() {
+            // Update index
+            if (dir < 0) {
+                currentIndex = (currentIndex + 1) % currentGameData.length;
+                swipeCount++;
+            } else {
+                currentIndex = (currentIndex - 1 + currentGameData.length) % currentGameData.length;
+            }
+
+            // Render new content instantly
+            var visual = document.getElementById('visual-display');
+            var desc = document.getElementById('description');
+            var item = currentGameData[currentIndex];
+            visual.innerHTML = item.content;
+            visual.className = item.type === 'emoji' ? 'system-emoji' : 'text-mode';
+            desc.textContent = item.text;
+
+            // Enter from opposite side
+            card.style.transition = 'none';
+            card.style.transform = 'translateX(' + (-dir * vw * 0.6) + 'px) rotate(0deg)';
+
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    card.style.transition = 'transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.transform = 'translateX(0) rotate(0deg)';
+                });
+            });
+
+            // Milestone or speak
+            if (dir < 0 && swipeCount % 5 === 0) {
+                triggerMilestone();
+            } else {
+                speakCurrent();
+            }
+        }, 200);
+    } else {
+        // Spring back
+        card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        card.style.transform = 'translateX(0) rotate(0deg)';
+    }
+
+    isSwiping = false;
+}
+
+document.addEventListener('touchstart', onSwipeStart, { passive: true });
+document.addEventListener('touchmove', onSwipeMove, { passive: false });
+document.addEventListener('touchend', onSwipeEnd);
 
 // --- INIT ---
 
@@ -384,9 +515,10 @@ function init() {
     document.getElementById('prev-btn').addEventListener('click', prevCard);
     document.getElementById('next-btn').addEventListener('click', nextCard);
 
+    // Desktop: mousedown on emoji triggers interaction
+    // Touch: handled by swipe system (tap detection in onSwipeEnd)
     const visual = document.getElementById('visual-display');
     visual.addEventListener('mousedown', handleInteraction);
-    visual.addEventListener('touchstart', handleInteraction);
 
     // Set initial button texts
     document.getElementById('home-btn').textContent = UI[currentLang].home;
