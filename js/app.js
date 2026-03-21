@@ -89,21 +89,6 @@ function getGameItems(categoryId) {
         }));
     }
 
-    // Stickers: image-based, no translations
-    if (categoryId === 'stickers') {
-        const count = 101;
-        const items = [];
-        for (let i = 0; i < count; i++) {
-            items.push({
-                type: 'sticker',
-                content: 'stickers/s_' + String(i).padStart(3, '0') + '.webp',
-                text: '',
-                voice: ''
-            });
-        }
-        return items;
-    }
-
     // Emoji Kitchen: mashup combos
     if (categoryId === 'kitchen') {
         const shuffled = shuffleArray(KITCHEN_COMBOS);
@@ -275,7 +260,7 @@ function updateScreen(direction) {
     const item = currentGameData[currentIndex];
 
     const renderItem = () => {
-        if (item.type === 'sticker' || item.type === 'kitchen') {
+        if (item.type === 'kitchen') {
             const img = new Image();
             img.src = item.content;
             img.alt = item.text || 'sticker';
@@ -331,12 +316,6 @@ function prevCard() {
 
 function handleInteraction() {
     const item = currentGameData[currentIndex];
-
-    // Stickers: just play a fun sound, no TTS
-    if (item.type === 'sticker') {
-        playTwinkle();
-        return;
-    }
 
     // Kitchen: swap to a random new combo on tap
     if (item.type === 'kitchen') {
@@ -538,7 +517,7 @@ function onSwipeEnd(e) {
             var visual = document.getElementById('visual-display');
             var desc = document.getElementById('description');
             var item = currentGameData[currentIndex];
-            if (item.type === 'sticker' || item.type === 'kitchen') {
+            if (item.type === 'kitchen') {
                 var img = new Image();
                 img.src = item.content;
                 img.alt = item.text || 'sticker';
