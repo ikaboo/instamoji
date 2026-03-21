@@ -26,6 +26,76 @@ function playKnock() {
     osc.start(t); osc.stop(t + 0.1);
 }
 
+function playSquish() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const t = audioCtx.currentTime;
+
+    // Bubbly squish: quick pitch drop + wobble
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, t);
+    osc.frequency.exponentialRampToValueAtTime(120, t + 0.15);
+    osc.frequency.exponentialRampToValueAtTime(200, t + 0.25);
+    gain.gain.setValueAtTime(0.35, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + 0.25);
+}
+
+function playPop() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const t = audioCtx.currentTime;
+
+    // Cartoon pop: sharp attack, quick decay
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(900, t);
+    osc.frequency.exponentialRampToValueAtTime(300, t + 0.08);
+    gain.gain.setValueAtTime(0.4, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.12);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + 0.12);
+
+    // Second bubble
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(1200, t + 0.06);
+    osc2.frequency.exponentialRampToValueAtTime(400, t + 0.15);
+    gain2.gain.setValueAtTime(0, t);
+    gain2.gain.linearRampToValueAtTime(0.25, t + 0.06);
+    gain2.gain.exponentialRampToValueAtTime(0.01, t + 0.18);
+    osc2.connect(gain2); gain2.connect(audioCtx.destination);
+    osc2.start(t); osc2.stop(t + 0.18);
+}
+
+function playBoing() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const t = audioCtx.currentTime;
+
+    // Spring boing: rising pitch with wobble
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(150, t);
+    osc.frequency.exponentialRampToValueAtTime(800, t + 0.1);
+    osc.frequency.exponentialRampToValueAtTime(400, t + 0.2);
+    osc.frequency.exponentialRampToValueAtTime(600, t + 0.25);
+    osc.frequency.exponentialRampToValueAtTime(350, t + 0.35);
+    gain.gain.setValueAtTime(0.3, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + 0.35);
+}
+
+const KITCHEN_SOUNDS = [playSquish, playPop, playBoing, playTwinkle];
+
+function playKitchenSound() {
+    KITCHEN_SOUNDS[Math.floor(Math.random() * KITCHEN_SOUNDS.length)]();
+}
+
 function playTwinkle() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const t = audioCtx.currentTime;
@@ -66,6 +136,10 @@ function speak(text, lang) {
 
 function speakCurrent() {
     const item = currentGameData[currentIndex];
+    if (item.type === 'kitchen') {
+        playKitchenSound();
+        return;
+    }
     if (item.voice) {
         speak(item.voice);
     }
@@ -319,7 +393,7 @@ function handleInteraction() {
 
     // Kitchen: swap to a random new combo on tap
     if (item.type === 'kitchen') {
-        playTwinkle();
+        playKitchenSound();
         const newCombo = KITCHEN_COMBOS[Math.floor(Math.random() * KITCHEN_COMBOS.length)];
         currentGameData[currentIndex] = {
             type: 'kitchen',
