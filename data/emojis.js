@@ -76,7 +76,16 @@ const EMOJIS = {
     { emoji: "\u{1F95D}", en: "Kiwi", ru: "Киви", uk: "Ківі", pt: "Kiwi" },
     { emoji: "\u{1F95E}", en: "Pancakes", ru: "Блины", uk: "Млинці", pt: "Panquecas" },
     { emoji: "\u{1F968}", en: "Pretzel", ru: "Крендель", uk: "Крендель", pt: "Pretzel" },
-    { emoji: "\u{1F9C0}", en: "Cheese", ru: "Сыр", uk: "Сир", pt: "Queijo" }
+    { emoji: "\u{1F9C0}", en: "Cheese", ru: "Сыр", uk: "Сир", pt: "Queijo" },
+    { emoji: "\u{1F95A}", en: "Egg", ru: "Яйцо", uk: "Яйце", pt: "Ovo" },
+    { emoji: "\u{1F35E}", en: "Bread", ru: "Хлеб", uk: "Хліб", pt: "Pão" },
+    { emoji: "\u{1F382}", en: "Cake", ru: "Торт", uk: "Торт", pt: "Bolo" },
+    { emoji: "\u{1F36B}", en: "Chocolate", ru: "Шоколад", uk: "Шоколад", pt: "Chocolate" },
+    { emoji: "\u{1F34B}", en: "Lemon", ru: "Лимон", uk: "Лимон", pt: "Limão" },
+    { emoji: "\u{1F96B}", en: "Juice", ru: "Сок", uk: "Сік", pt: "Sumo" },
+    { emoji: "\u{1F95B}", en: "Milk", ru: "Молоко", uk: "Молоко", pt: "Leite" },
+    { emoji: "\u{1F96A}", en: "Sandwich", ru: "Бутерброд", uk: "Бутерброд", pt: "Sandes" },
+    { emoji: "\u{1F35D}", en: "Spaghetti", ru: "Спагетти", uk: "Спагеті", pt: "Esparguete" }
   ],
 
   colors: [
@@ -125,7 +134,20 @@ const EMOJIS = {
     { emoji: "\u{1F428}", en: "Koala", ru: "Коала", uk: "Коала", pt: "Coala" },
     { emoji: "\u{1F98A}", en: "Fox", ru: "Лиса", uk: "Лисиця", pt: "Raposa" },
     { emoji: "\u{1F993}", en: "Zebra", ru: "Зебра", uk: "Зебра", pt: "Zebra" },
-    { emoji: "\u{1F422}", en: "Turtle", ru: "Черепаха", uk: "Черепаха", pt: "Tartaruga" }
+    { emoji: "\u{1F422}", en: "Turtle", ru: "Черепаха", uk: "Черепаха", pt: "Tartaruga" },
+    { emoji: "\u{1F433}", en: "Whale", ru: "Кит", uk: "Кит", pt: "Baleia" },
+    { emoji: "\u{1F42C}", en: "Dolphin", ru: "Дельфин", uk: "Дельфін", pt: "Golfinho" },
+    { emoji: "\u{1F988}", en: "Shark", ru: "Акула", uk: "Акула", pt: "Tubarão" },
+    { emoji: "\u{1F427}", en: "Penguin", ru: "Пингвин", uk: "Пінгвін", pt: "Pinguim" },
+    { emoji: "\u{1F989}", en: "Owl", ru: "Сова", uk: "Сова", pt: "Coruja" },
+    { emoji: "\u{1F98B}", en: "Butterfly", ru: "Бабочка", uk: "Метелик", pt: "Borboleta" },
+    { emoji: "\u{1F41D}", en: "Bee", ru: "Пчела", uk: "Бджола", pt: "Abelha" },
+    { emoji: "\u{1F40C}", en: "Snail", ru: "Улитка", uk: "Равлик", pt: "Caracol" },
+    { emoji: "\u{1F419}", en: "Octopus", ru: "Осьминог", uk: "Восьминіг", pt: "Polvo" },
+    { emoji: "\u{1F40A}", en: "Crocodile", ru: "Крокодил", uk: "Крокодил", pt: "Crocodilo" },
+    { emoji: "\u{1F577}\u{FE0F}", en: "Spider", ru: "Паук", uk: "Павук", pt: "Aranha" },
+    { emoji: "\u{1F41E}", en: "Ladybug", ru: "Божья коровка", uk: "Сонечко", pt: "Joaninha" },
+    { emoji: "\u{1F996}", en: "Dinosaur", ru: "Динозавр", uk: "Динозавр", pt: "Dinossauro" }
   ],
 
   vehicles: [
@@ -142,7 +164,67 @@ const EMOJIS = {
     { emoji: "\u{1F68C}", en: "Bus", ru: "Автобус", uk: "Автобус", pt: "Autocarro" },
     { emoji: "\u{2708}\u{FE0F}", en: "Airplane", ru: "Самолёт", uk: "Літак", pt: "Avião" },
     { emoji: "\u{1F681}", en: "Helicopter", ru: "Вертолёт", uk: "Гелікоптер", pt: "Helicóptero" },
-    { emoji: "\u{1F6E5}\u{FE0F}", en: "Boat", ru: "Лодка", uk: "Човен", pt: "Barco" }
+    { emoji: "\u{1F6E5}\u{FE0F}", en: "Boat", ru: "Лодка", uk: "Човен", pt: "Barco" },
+    { emoji: "\u{1F6B2}", en: "Bicycle", ru: "Велосипед", uk: "Велосипед", pt: "Bicicleta" },
+    { emoji: "\u{1F6F4}", en: "Scooter", ru: "Самокат", uk: "Самокат", pt: "Trotinete" },
+    { emoji: "\u{1F680}", en: "Rocket", ru: "Ракета", uk: "Ракета", pt: "Foguetão" },
+    { emoji: "\u{26F5}", en: "Sailboat", ru: "Парусник", uk: "Вітрильник", pt: "Veleiro" }
+  ],
+
+  actions: [
+    { emoji: "\u{1F3C3}", en: "Running", ru: "Бежит", uk: "Біжить", pt: "A correr" },
+    { emoji: "\u{1F938}", en: "Jumping", ru: "Прыгает", uk: "Стрибає", pt: "A saltar" },
+    { emoji: "\u{1F3CA}", en: "Swimming", ru: "Плавает", uk: "Плаває", pt: "A nadar" },
+    { emoji: "\u{1F483}", en: "Dancing", ru: "Танцует", uk: "Танцює", pt: "A dançar" },
+    { emoji: "\u{1F634}", en: "Sleeping", ru: "Спит", uk: "Спить", pt: "A dormir" },
+    { emoji: "\u{1F37D}\u{FE0F}", en: "Eating", ru: "Кушает", uk: "Їсть", pt: "A comer" },
+    { emoji: "\u{1F44F}", en: "Clapping", ru: "Хлопает", uk: "Плескає", pt: "A bater palmas" },
+    { emoji: "\u{1F44B}", en: "Waving", ru: "Машет", uk: "Махає", pt: "A acenar" },
+    { emoji: "\u{1F6B6}", en: "Walking", ru: "Идёт", uk: "Іде", pt: "A andar" },
+    { emoji: "\u{1F6B4}", en: "Biking", ru: "Катается", uk: "Катається", pt: "A andar de bicicleta" },
+    { emoji: "\u{1F9D7}", en: "Climbing", ru: "Лезет", uk: "Лізе", pt: "A escalar" },
+    { emoji: "\u{26BD}", en: "Playing", ru: "Играет", uk: "Грає", pt: "A jogar" },
+    { emoji: "\u{1F3A8}", en: "Painting", ru: "Рисует", uk: "Малює", pt: "A pintar" },
+    { emoji: "\u{1F6C1}", en: "Bathing", ru: "Купается", uk: "Купається", pt: "A tomar banho" },
+    { emoji: "\u{1F3B6}", en: "Singing", ru: "Поёт", uk: "Співає", pt: "A cantar" }
+  ],
+
+  body: [
+    { emoji: "\u{1F440}", en: "Eyes", ru: "Глаза", uk: "Очі", pt: "Olhos" },
+    { emoji: "\u{1F443}", en: "Nose", ru: "Нос", uk: "Ніс", pt: "Nariz" },
+    { emoji: "\u{1F444}", en: "Mouth", ru: "Рот", uk: "Рот", pt: "Boca" },
+    { emoji: "\u{1F442}", en: "Ear", ru: "Ухо", uk: "Вухо", pt: "Orelha" },
+    { emoji: "\u{270B}", en: "Hand", ru: "Рука", uk: "Рука", pt: "Mão" },
+    { emoji: "\u{1F9B6}", en: "Foot", ru: "Нога", uk: "Нога", pt: "Pé" },
+    { emoji: "\u{1F9B7}", en: "Teeth", ru: "Зубы", uk: "Зуби", pt: "Dentes" },
+    { emoji: "\u{1F4AA}", en: "Strong", ru: "Сильный", uk: "Сильний", pt: "Forte" },
+    { emoji: "\u{1F9E0}", en: "Brain", ru: "Мозг", uk: "Мозок", pt: "Cérebro" }
+  ],
+
+  weather: [
+    { emoji: "\u{2600}\u{FE0F}", en: "Sun", ru: "Солнце", uk: "Сонце", pt: "Sol" },
+    { emoji: "\u{1F327}\u{FE0F}", en: "Rain", ru: "Дождь", uk: "Дощ", pt: "Chuva" },
+    { emoji: "\u{2744}\u{FE0F}", en: "Snow", ru: "Снег", uk: "Сніг", pt: "Neve" },
+    { emoji: "\u{1F308}", en: "Rainbow", ru: "Радуга", uk: "Веселка", pt: "Arco-íris" },
+    { emoji: "\u{2601}\u{FE0F}", en: "Cloud", ru: "Облако", uk: "Хмара", pt: "Nuvem" },
+    { emoji: "\u{26A1}", en: "Lightning", ru: "Молния", uk: "Блискавка", pt: "Relâmpago" },
+    { emoji: "\u{1F319}", en: "Moon", ru: "Луна", uk: "Місяць", pt: "Lua" },
+    { emoji: "\u{2B50}", en: "Star", ru: "Звезда", uk: "Зірка", pt: "Estrela" },
+    { emoji: "\u{1F30A}", en: "Wave", ru: "Волна", uk: "Хвиля", pt: "Onda" },
+    { emoji: "\u{1F525}", en: "Fire", ru: "Огонь", uk: "Вогонь", pt: "Fogo" },
+    { emoji: "\u{1F332}", en: "Tree", ru: "Дерево", uk: "Дерево", pt: "Árvore" },
+    { emoji: "\u{1F33B}", en: "Flower", ru: "Цветок", uk: "Квітка", pt: "Flor" }
+  ],
+
+  clothes: [
+    { emoji: "\u{1F455}", en: "Shirt", ru: "Рубашка", uk: "Сорочка", pt: "Camisa" },
+    { emoji: "\u{1F456}", en: "Pants", ru: "Штаны", uk: "Штани", pt: "Calças" },
+    { emoji: "\u{1F45F}", en: "Shoes", ru: "Кроссовки", uk: "Кросівки", pt: "Sapatos" },
+    { emoji: "\u{1F9E2}", en: "Hat", ru: "Кепка", uk: "Кепка", pt: "Chapéu" },
+    { emoji: "\u{1F9E6}", en: "Socks", ru: "Носки", uk: "Шкарпетки", pt: "Meias" },
+    { emoji: "\u{1F457}", en: "Dress", ru: "Платье", uk: "Плаття", pt: "Vestido" },
+    { emoji: "\u{1F9E5}", en: "Coat", ru: "Куртка", uk: "Куртка", pt: "Casaco" },
+    { emoji: "\u{1F97E}", en: "Boots", ru: "Ботинки", uk: "Чоботи", pt: "Botas" }
   ],
 
   feelings: [

@@ -6,7 +6,8 @@ const UI = {
     categories: {
       alphabet: "Alphabet", numbers: "Numbers", food: "Food",
       colors: "Colors", shapes: "Shapes", animals: "Animals",
-      vehicles: "Vroom!", feelings: "Feelings",
+      vehicles: "Vroom!", actions: "Actions", body: "Body",
+      weather: "Weather", clothes: "Clothes", feelings: "Feelings",
       random: "Random Mix", all: "All Emojis"
     },
     home: "HOME",
@@ -18,7 +19,8 @@ const UI = {
     categories: {
       alphabet: "Алфавит", numbers: "Числа", food: "Еда",
       colors: "Цвета", shapes: "Фигуры", animals: "Животные",
-      vehicles: "Бип-бип!", feelings: "Чувства",
+      vehicles: "Бип-бип!", actions: "Действия", body: "Тело",
+      weather: "Погода", clothes: "Одежда", feelings: "Чувства",
       random: "Случайный микс", all: "Все эмодзи"
     },
     home: "ДОМОЙ",
@@ -30,7 +32,8 @@ const UI = {
     categories: {
       alphabet: "Абетка", numbers: "Числа", food: "Їжа",
       colors: "Кольори", shapes: "Фігури", animals: "Тварини",
-      vehicles: "Біп-біп!", feelings: "Почуття",
+      vehicles: "Біп-біп!", actions: "Дії", body: "Тіло",
+      weather: "Погода", clothes: "Одяг", feelings: "Почуття",
       random: "Випадковий мікс", all: "Всі емоджі"
     },
     home: "ДОДОМУ",
@@ -42,7 +45,8 @@ const UI = {
     categories: {
       alphabet: "Alfabeto", numbers: "Números", food: "Comida",
       colors: "Cores", shapes: "Formas", animals: "Animais",
-      vehicles: "Vrum!", feelings: "Sentimentos",
+      vehicles: "Vrum!", actions: "Ações", body: "Corpo",
+      weather: "Tempo", clothes: "Roupa", feelings: "Sentimentos",
       random: "Mistura", all: "Todos"
     },
     home: "INÍCIO",
@@ -76,5 +80,9 @@ const CATEGORY_LIST = [
   { id: "shapes", icon: "\u{2764}\u{FE0F}" },
   { id: "animals", icon: "\u{1F436}" },
   { id: "vehicles", icon: "\u{1F692}" },
+  { id: "actions", icon: "\u{1F3C3}" },
+  { id: "body", icon: "\u{1F440}" },
+  { id: "weather", icon: "\u{2600}\u{FE0F}" },
+  { id: "clothes", icon: "\u{1F45F}" },
   { id: "feelings", icon: "\u{1F970}" }
 ];

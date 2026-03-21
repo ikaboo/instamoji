@@ -96,7 +96,7 @@ function getGameItems(categoryId) {
 }
 
 function getAllEmojiItems() {
-    const cats = ['animals', 'vehicles', 'food', 'feelings', 'shapes', 'colors'];
+    const cats = ['animals', 'vehicles', 'food', 'feelings', 'shapes', 'colors', 'actions', 'body', 'weather', 'clothes'];
     let all = [];
     cats.forEach(cat => { all = all.concat(getGameItems(cat)); });
     return all;
@@ -187,7 +187,7 @@ function startGame(cat) {
     let items;
 
     if (cat === 'random') {
-        const cats = ['alphabet', 'numbers', 'food', 'colors', 'shapes', 'animals', 'vehicles', 'feelings'];
+        const cats = ['alphabet', 'numbers', 'food', 'colors', 'shapes', 'animals', 'vehicles', 'actions', 'body', 'weather', 'clothes', 'feelings'];
         items = [];
         cats.forEach(c => { items = items.concat(getGameItems(c)); });
         items = shuffleArray(items);
