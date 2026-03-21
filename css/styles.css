@@ -73,7 +73,7 @@ body {
 /* --- MENU --- */
 
 #menu-screen { justify-content: flex-start; padding-top: 110px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-.menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 85%; max-width: 400px; padding-bottom: 80px; }
+.menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 85%; max-width: 400px; padding-bottom: 120px; }
 
 .cat-card {
     background: white; padding: 15px 5px; border-radius: 20px; font-size: 1.1rem;
