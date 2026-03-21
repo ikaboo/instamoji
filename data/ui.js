@@ -8,6 +8,7 @@ const UI = {
       colors: "Colors", shapes: "Shapes", animals: "Animals",
       vehicles: "Vroom!", actions: "Actions", body: "Body",
       weather: "Weather", clothes: "Clothes", feelings: "Feelings",
+      stickers: "Tashkent!", kitchen: "Mix!",
       random: "Random Mix", all: "All Emojis"
     },
     home: "HOME",
@@ -21,6 +22,7 @@ const UI = {
       colors: "Цвета", shapes: "Фигуры", animals: "Животные",
       vehicles: "Бип-бип!", actions: "Действия", body: "Тело",
       weather: "Погода", clothes: "Одежда", feelings: "Чувства",
+      stickers: "Ташкент!", kitchen: "Миксуй!",
       random: "Случайный микс", all: "Все эмодзи"
     },
     home: "ДОМОЙ",
@@ -34,6 +36,7 @@ const UI = {
       colors: "Кольори", shapes: "Фігури", animals: "Тварини",
       vehicles: "Біп-біп!", actions: "Дії", body: "Тіло",
       weather: "Погода", clothes: "Одяг", feelings: "Почуття",
+      stickers: "Ташкент!", kitchen: "Мікс!",
       random: "Випадковий мікс", all: "Всі емоджі"
     },
     home: "ДОДОМУ",
@@ -47,6 +50,7 @@ const UI = {
       colors: "Cores", shapes: "Formas", animals: "Animais",
       vehicles: "Vrum!", actions: "Ações", body: "Corpo",
       weather: "Tempo", clothes: "Roupa", feelings: "Sentimentos",
+      stickers: "Tashkent!", kitchen: "Mistura!",
       random: "Mistura", all: "Todos"
     },
     home: "INÍCIO",
@@ -84,5 +88,7 @@ const CATEGORY_LIST = [
   { id: "body", icon: "\u{1F440}" },
   { id: "weather", icon: "\u{2600}\u{FE0F}" },
   { id: "clothes", icon: "\u{1F45F}" },
-  { id: "feelings", icon: "\u{1F970}" }
+  { id: "feelings", icon: "\u{1F970}" },
+  { id: "stickers", icon: "\u{1F1FA}\u{1F1FF}" },
+  { id: "kitchen", icon: "\u{1F52E}" }
 ];

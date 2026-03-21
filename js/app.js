@@ -66,7 +66,9 @@ function speak(text, lang) {
 
 function speakCurrent() {
     const item = currentGameData[currentIndex];
-    speak(item.voice);
+    if (item.voice) {
+        speak(item.voice);
+    }
 }
 
 // --- DATA HELPERS ---
@@ -84,6 +86,32 @@ function getGameItems(categoryId) {
     if (categoryId === 'numbers') {
         return EMOJIS.numbers.map(n => ({
             type: 'text', content: n.content, text: n[currentLang], voice: n[currentLang]
+        }));
+    }
+
+    // Stickers: image-based, no translations
+    if (categoryId === 'stickers') {
+        const count = 101;
+        const items = [];
+        for (let i = 0; i < count; i++) {
+            items.push({
+                type: 'sticker',
+                content: 'stickers/s_' + String(i).padStart(3, '0') + '.webp',
+                text: '',
+                voice: ''
+            });
+        }
+        return items;
+    }
+
+    // Emoji Kitchen: mashup combos
+    if (categoryId === 'kitchen') {
+        const shuffled = shuffleArray(KITCHEN_COMBOS);
+        return shuffled.slice(0, 40).map(c => ({
+            type: 'kitchen',
+            content: c.url,
+            text: c.leftEmoji + ' + ' + c.rightEmoji,
+            voice: ''
         }));
     }
 
@@ -247,8 +275,20 @@ function updateScreen(direction) {
     const item = currentGameData[currentIndex];
 
     const renderItem = () => {
-        visual.innerHTML = item.content;
-        visual.className = item.type === 'emoji' ? 'system-emoji' : 'text-mode';
+        if (item.type === 'sticker' || item.type === 'kitchen') {
+            const img = new Image();
+            img.src = item.content;
+            img.alt = item.text || 'sticker';
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '100%';
+            img.style.objectFit = 'contain';
+            visual.innerHTML = '';
+            visual.appendChild(img);
+            visual.className = '';
+        } else {
+            visual.innerHTML = item.content;
+            visual.className = item.type === 'emoji' ? 'system-emoji' : 'text-mode';
+        }
         desc.textContent = item.text;
     };
 
@@ -290,10 +330,41 @@ function prevCard() {
 // --- INTERACTION (tap emoji) ---
 
 function handleInteraction() {
+    const item = currentGameData[currentIndex];
+
+    // Stickers: just play a fun sound, no TTS
+    if (item.type === 'sticker') {
+        playTwinkle();
+        return;
+    }
+
+    // Kitchen: swap to a random new combo on tap
+    if (item.type === 'kitchen') {
+        playTwinkle();
+        const newCombo = KITCHEN_COMBOS[Math.floor(Math.random() * KITCHEN_COMBOS.length)];
+        currentGameData[currentIndex] = {
+            type: 'kitchen',
+            content: newCombo.url,
+            text: newCombo.leftEmoji + ' + ' + newCombo.rightEmoji,
+            voice: ''
+        };
+        const visual = document.getElementById('visual-display');
+        const desc = document.getElementById('description');
+        const img = new Image();
+        img.src = newCombo.url;
+        img.style.maxWidth = '100%';
+        img.style.maxHeight = '100%';
+        img.style.objectFit = 'contain';
+        visual.innerHTML = '';
+        visual.appendChild(img);
+        visual.className = '';
+        desc.textContent = newCombo.leftEmoji + ' + ' + newCombo.rightEmoji;
+        return;
+    }
+
     playKnock();
     speakCurrent();
 
-    const item = currentGameData[currentIndex];
     const visual = document.getElementById('visual-display');
 
     if (item.type === 'emoji' && !visual.querySelector('img')) {
@@ -467,8 +538,20 @@ function onSwipeEnd(e) {
             var visual = document.getElementById('visual-display');
             var desc = document.getElementById('description');
             var item = currentGameData[currentIndex];
-            visual.innerHTML = item.content;
-            visual.className = item.type === 'emoji' ? 'system-emoji' : 'text-mode';
+            if (item.type === 'sticker' || item.type === 'kitchen') {
+                var img = new Image();
+                img.src = item.content;
+                img.alt = item.text || 'sticker';
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = '100%';
+                img.style.objectFit = 'contain';
+                visual.innerHTML = '';
+                visual.appendChild(img);
+                visual.className = '';
+            } else {
+                visual.innerHTML = item.content;
+                visual.className = item.type === 'emoji' ? 'system-emoji' : 'text-mode';
+            }
             desc.textContent = item.text;
 
             // Enter from opposite side
