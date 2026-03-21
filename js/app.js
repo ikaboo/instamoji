@@ -90,12 +90,6 @@ function playBoing() {
     osc.start(t); osc.stop(t + 0.35);
 }
 
-const KITCHEN_SOUNDS = [playSquish, playPop, playBoing, playTwinkle];
-
-function playKitchenSound() {
-    KITCHEN_SOUNDS[Math.floor(Math.random() * KITCHEN_SOUNDS.length)]();
-}
-
 function playTwinkle() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const t = audioCtx.currentTime;
@@ -122,6 +116,12 @@ function playTwinkle() {
     gain2.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
     osc2.connect(gain2); gain2.connect(audioCtx.destination);
     osc2.start(t); osc2.stop(t + 0.25);
+}
+
+const KITCHEN_SOUNDS = [playSquish, playPop, playBoing, playTwinkle];
+
+function playKitchenSound() {
+    KITCHEN_SOUNDS[Math.floor(Math.random() * KITCHEN_SOUNDS.length)]();
 }
 
 // --- TTS ---
